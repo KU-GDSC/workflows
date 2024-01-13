@@ -4,4 +4,4 @@ This repository contains production bioinformatic analysis workflows developed a
 
 ## Quick Start, Workflow, and Developer Documentation: 
 
-Please see the [documentation](https://ku-gdsc.github.io/documentation/) associated with this repository.
+Please see the [full documentation](https://ku-gdsc.github.io/documentation/workflows) for workflows in this repository.
