@@ -55,9 +55,9 @@ workflow MICROBIAL_RNASEQ {
 
     // Merge RSEM results across samples
     ch_genes = Channel.empty()
-    ch_genes = ch_genes.mix(RSEM_CALCULATE_EXPRESSION.out.rsem_genes.collect{it[0]}.ifEmpty([]))
+    ch_genes = ch_genes.mix(RSEM_CALCULATE_EXPRESSION.out.rsem_genes.collect{it[1]}.ifEmpty([]))
     ch_isoforms = Channel.empty()
-    ch_isoforms = ch_isoforms.mix(RSEM_CALCULATE_EXPRESSION.out.rsem_isoforms.collect{it[0]}.ifEmpty([]))
+    ch_isoforms = ch_isoforms.mix(RSEM_CALCULATE_EXPRESSION.out.rsem_isoforms.collect{it[1]}.ifEmpty([]))
 
     MERGE_RSEM_COUNTS(ch_genes, ch_isoforms)
 
