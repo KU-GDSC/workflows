@@ -11,6 +11,7 @@ include {FASTP} from "${projectDir}/modules/fastp/fastp"
 include {FASTQC} from "${projectDir}/modules/fastqc/fastqc"
 include {READ_GROUPS} from "${projectDir}/modules/utility_modules/read_groups"
 include {RSEM_CALCULATE_EXPRESSION} from "${projectDir}/modules/rsem/rsem_calculate_expression"
+include {MERGE_RSEM_COUNTS} from "${projectDir}/modules/utility_modules/merge_rsem_counts"
 include {PICARD_ADDORREPLACEREADGROUPS} from "${projectDir}/modules/picard/picard_addorreplacereadgroups"
 include {PICARD_REORDERSAM} from "${projectDir}/modules/picard/picard_reordersam"
 include {PICARD_SORTSAM} from "${projectDir}/modules/picard/picard_sortsam"
@@ -51,6 +52,14 @@ workflow MICROBIAL_RNASEQ {
 
     rsem_input = FASTP.out.trimmed_fastq.join(GET_READ_LENGTH.out.read_length)
     RSEM_CALCULATE_EXPRESSION(rsem_input, RNASEQ_INDICES.out.rsem_index, RNASEQ_INDICES.out.rsem_basename)
+
+    // Merge RSEM results across samples
+    ch_genes = Channel.empty()
+    ch_genes = ch_genes.mix(RSEM_CALCULATE_EXPRESSION.out.rsem_genes.collect{it[0]}.ifEmpty([]))
+    ch_isoforms = Channel.empty()
+    ch_isoforms = ch_isoforms.mix(RSEM_CALCULATE_EXPRESSION.out.rsem_isoforms.collect{it[0]}.ifEmpty([]))
+
+    MERGE_RSEM_COUNTS(ch_genes, ch_isoforms)
 
     // Picard Alignment Metrics
     add_replace_groups = READ_GROUPS.out.read_groups.join(RSEM_CALCULATE_EXPRESSION.out.bam)
