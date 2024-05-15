@@ -4,6 +4,8 @@ nextflow.enable.dsl=2
 // import modules
 include {HELP} from "${projectDir}/etc/help/microbial_rnaseq"
 include {PARAM_LOG} from "${projectDir}/etc/log/microbial_rnaseq"
+include {CONCATENATE_READS_PE} from "${projectDir}/modules/utility_modules/concatenate_reads_pe
+include {CONCATENATE_READS_SE} from "${projectDir}/modules/utility_modules/concatenate_reads_se
 include {GET_LIBRARY_ID} from "${projectDir}/etc/scripts/shared/getLibraryId.nf"
 include {GET_READ_LENGTH} from "${projectDir}/modules/utility_modules/get_read_length"
 include {RNASEQ_INDICES} from "${projectDir}/subworkflows/indices/microbial_rnaseq"
@@ -34,15 +36,39 @@ workflow MICROBIAL_RNASEQ {
     
     // Read preprocessing and QC
     // prepare reads channel
-    if (params.read_type == 'PE'){
-        read_ch = Channel.fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true )
+    if (params.concat_lanes) {
+        if (params.read_type == 'PE') {
+            read_ch = Channel
+                        .fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true, flat:true)
+                        .map {file, file1, file2 -> tuple(getLibraryId(file), file1, file2) }
+                        .groupTuple()
+            CONCATENATE_READS_PE(read_ch)
+            read_ch = CONCATENATE_READS_PE.out.concat_fastq
         }
-    else if (params.read_type == 'SE'){
-        read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}",checkExists:true, size:1 )
+        else if (params.read_type == 'SE'){
+            read_ch = Channel
+                        .fromFilePairs("${params.sample_folder}/*${params.extension}", checkExists:true, size:1 )
+                        .map { file, file1 -> tuple(getLibraryId(file, file1) }
+                        .groupTuple()
+                        .map{t-> [t[0], t[1].flatten()]}
+            CONCATENATE_READS_SE(read_ch)
+            read_ch = CONCATENATE_READS_SE.out.concat_fastq
         }
 
     // if channel is empty give error message and exit
     read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
+    } else {
+
+        if (params.read_type == 'PE'){
+            read_ch = Channel.fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true )
+        }
+        else if (params.read_type == 'SE'){
+            read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}",checkExists:true, size:1 )
+        }
+
+        // if channel is empty give error message and exit
+        read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
+    }
 
 
     GET_READ_LENGTH(read_ch)
