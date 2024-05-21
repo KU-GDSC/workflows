@@ -9,6 +9,7 @@ Results Published to: ${params.pubdir}
 ______________________________________________________
 --workflow                   ${params.workflow}
 --read_type                  ${params.read_type}
+--concat_lanes               ${params.concat_lanes}
 --sample_folder              ${params.sample_folder}
 --extension                  ${params.extension}
 --pattern                    ${params.pattern}
