@@ -33,6 +33,19 @@ process RSEM_PREPAREREFERENCE {
         rm ${gff}
         """
         }
+
+    else if (params.workflow == "rnaseq") {
+        """
+        rsem-prepare-reference \
+            --gff3 ${gff} \
+            --bowtie2 \
+            ${fasta} \
+            rsem/${fasta.baseName}
+
+        rm ${fasta}
+        rm ${gff}
+        """
+    }
     else {
         error("The workflow " $params.workflow " is not currently supported")
         }
