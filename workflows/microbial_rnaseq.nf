@@ -60,8 +60,6 @@ if (params.read_type == 'PE'){
 
 workflow MICROBIAL_RNASEQ {
 
-    // Generate RSEM indices
-    RNASEQ_INDICES(params.fasta, params.gff)
 
     if (params.concat_lanes){
         if (params.read_type == 'PE'){
@@ -74,6 +72,11 @@ workflow MICROBIAL_RNASEQ {
     }
 
     GET_READ_LENGTH(read_ch)
+    ch_read_lengths = GET_READ_LENGTH.out.read_length.collect { it[1].toInteger() - 1 }
+    ch_rsem_read_length = ch_read_lengths.flatten().unique()
+
+    // Generate RSEM indices
+    RNASEQ_INDICES(params.fasta, params.gff, ch_rsem_read_length)
     FASTP(read_ch)
     FASTQC(FASTP.out.trimmed_fastq)
     READ_GROUPS(FASTP.out.trimmed_fastq, "picard")
