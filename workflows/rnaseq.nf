@@ -60,9 +60,6 @@ if (params.read_type == 'PE'){
 
 workflow RNASEQ {
 
-    // Generate RSEM indices
-    RNASEQ_INDICES(params.fasta, params.gff)
-
     if (params.concat_lanes){
         if (params.read_type == 'PE'){
             CONCATENATE_READS_PE(read_ch)
@@ -72,11 +69,16 @@ workflow RNASEQ {
             read_ch = CONCATENATE_READS_SE.out.concat_fastq
         }
     }
-
+    // Get read lenghts from FASTQs
     GET_READ_LENGTH(read_ch)
+    ch_read_lengths = GET_READ_LENGTH.out.read_length.collect { it[1].toInteger() - 1 }
+    ch_rsem_read_length = ch_read_lengths.flatten().unique()
     FASTP(read_ch)
     FASTQC(FASTP.out.trimmed_fastq)
     READ_GROUPS(FASTP.out.trimmed_fastq, "picard")
+
+    // Generate RSEM indices
+    RNASEQ_INDICES(params.fasta, params.gff, ch_rsem_read_length)
 
     rsem_input = FASTP.out.trimmed_fastq.join(GET_READ_LENGTH.out.read_length)
     RSEM_CALCULATE_EXPRESSION(rsem_input, RNASEQ_INDICES.out.rsem_index, RNASEQ_INDICES.out.rsem_basename)
@@ -101,6 +103,7 @@ workflow RNASEQ {
     ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(RSEM_CALCULATE_EXPRESSION.out.rsem_cnt.collect{it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(RSEM_CALCULATE_EXPRESSION.out.star_log.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTRNASEQMETRICS.out.picard_metrics.collect{it[1]}.ifEmpty([]))
 
     MULTIQC (

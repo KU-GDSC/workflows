@@ -30,6 +30,7 @@ process RSEM_CALCULATE_EXPRESSION {
     tuple val(sampleID), path("*.transcript.bam"), emit: transcript_bam
     tuple val(sampleID), path("*.genome.sorted.bam"), path("*.genome.sorted.bam.bai"), emit: sorted_genomic_bam
     tuple val(sampleID), path("*.transcript.sorted.bam"), path("*.transcript.sorted.bam.bai"), emit: sorted_transcript_bam
+    tuple val(sampleID), path("*final.out"), emit: star_log, optional: true
  
   script:
 
@@ -55,12 +56,25 @@ process RSEM_CALCULATE_EXPRESSION {
       stype=""
       trimmedfq="${reads[0]}"
     }
-    outbam="--output-genome-bam --sort-bam-by-coordinate"
-    seed_length="--seed-length ${params.seed_length}"
-    sort_command=''
-    index_command=''
-    read_length = read_length.toInteger()
+    if (params.rsem_aligner == "bowtie2") {
+        outbam="--output-genome-bam --sort-bam-by-coordinate"
+        seed_length="--seed-length ${params.seed_length}"
+        sort_command=''
+        index_command=''
+        intermediate=''
+        star_log=''
+    }
+    if (params.rsem_aligner == "star") {
+        outbam="--star-output-genome-bam --sort-bam-by-coordinate"
+        seed_length=""
+        samtools_mem = (int)(task.memory.giga / task.cpus)
+        sort_command="samtools sort -@ 6 -m 5G -o ${sampleID}.STAR.genome.sorted.bam ${sampleID}.STAR.genome.bam"
+        index_command="samtools index ${sampleID}.STAR.genome.sorted.bam"
+        intermediate="--keep-intermediate-files"
+        star_log="cp ${sampleID}.temp/*.final.out ./${sampleID}.STAR.Log.final.out && rm -r ${sampleID}.temp"
+    }
 
+    read_length = read_length.toInteger()
     """
 
     rsem-calculate-expression -p $task.cpus \
@@ -74,7 +88,11 @@ process RSEM_CALCULATE_EXPRESSION {
         ${trimmedfq} \
         rsem/${rsem_basename} \
         ${sampleID} \
+        ${intermediate} \
+        --sort-bam-memory-per-thread 5G \
         2> rsem_aln_${sampleID}.stats
+
+        ${star_log}
 
         ${sort_command}
 

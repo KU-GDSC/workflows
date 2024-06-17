@@ -12,6 +12,7 @@ process RSEM_PREPAREREFERENCE {
   input:
     path(fasta), stageAs: "rsem/*"
     path(gff), stageAs: "rsem/*"
+    val(read_length)
 
   output:
     path("rsem"), emit: index
@@ -34,7 +35,7 @@ process RSEM_PREPAREREFERENCE {
         """
         }
 
-    else if (params.workflow == "rnaseq") {
+    else if (params.workflow == "rnaseq" & params.rsem_aligner == "bowtie2") {
         """
         rsem-prepare-reference \
             --gff3 ${gff} \
@@ -46,7 +47,19 @@ process RSEM_PREPAREREFERENCE {
         rm ${gff}
         """
     }
+
+    else if (params.workflow == "rnaseq" & params.rsem_aligner == "star") {
+       
+        """
+        rsem-prepare-reference \
+            --gff3 ${gff} \
+            --star \
+            --star-sjdboverhang ${read_length} \
+            ${fasta} \
+            rsem/${fasta.baseName}
+        """
+    }
     else {
-        error("The workflow " $params.workflow " is not currently supported")
+        error("The workflow " $params.workflow " or the aligner " $params.rsem_aligner " is not currently supported")
         }
 }
