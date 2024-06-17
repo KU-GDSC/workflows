@@ -24,6 +24,7 @@ process RSEM_PREPAREREFERENCE {
     if (params.workflow == "microbial_rnaseq") {
         """
         rsem-prepare-reference \
+            -p $task.cpus \
             --gff3 ${gff} \
             --gff3-genes-as-transcripts \
             --bowtie2 \
@@ -38,6 +39,7 @@ process RSEM_PREPAREREFERENCE {
     else if (params.workflow == "rnaseq" & params.rsem_aligner == "bowtie2") {
         """
         rsem-prepare-reference \
+            -p $task.cpus \
             --gff3 ${gff} \
             --bowtie2 \
             ${fasta} \
@@ -52,6 +54,7 @@ process RSEM_PREPAREREFERENCE {
        
         """
         rsem-prepare-reference \
+            -p $task.cpus \
             --gff3 ${gff} \
             --star \
             --star-sjdboverhang ${read_length} \
