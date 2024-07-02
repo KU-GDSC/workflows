@@ -61,7 +61,7 @@ if (params.read_type == 'PE'){
 workflow RNASEQ {
 
     // Generate RSEM indices
-    RNASEQ_INDICES(params.fasta, params.gff)
+    RNASEQ_INDICES(params.fasta, params.gtf)
 
     if (params.concat_lanes){
         if (params.read_type == 'PE'){
