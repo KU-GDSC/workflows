@@ -59,9 +59,29 @@ if (params.read_type == 'PE'){
 }
 
 workflow RNASEQ {
+    // Initialize or generate RSEM indices
 
-    // Generate RSEM indices
-    RNASEQ_INDICES(params.fasta, params.gtf)
+    // If pre-generated indices provided, map to channels
+    if (params.rsem_index) {
+        rnaseq_indices_dict = file("${params.rsem_index}/rsem_bowtie2.dict")
+        rnaseq_indices_refFlat = file("${params.rsem_index}/rsem_bowtie2.refFlat.txt")
+        rnaseq_indices_rRNA_intervals = file("${params.rsem_index}/rsem_bowtie2.rRNA_intervals.list")
+        rnaseq_indices_rsem = file("${params.rsem_index}/rsem_bowtie2.*").collect { "$it" }
+        rnaseq_indices_basename = Channel.value("rsem_bowtie2")
+
+    // Otherwise, if FASTA and GTF provided, generate indices
+    } else if (params.fasta && params.gtf) {
+
+        RNASEQ_INDICES(params.fasta, params.gtf)
+        rnaseq_indices_dict = RNASEQ_INDICES.out.dict
+        rnaseq_indices_refFlat = RNASEQ_INDICES.out.refFlat
+        rnaseq_indices_rRNA_intervals = RNASEQ_INDICES.out.rRNA_intervals
+        rnaseq_indices_rsem = RNASEQ_INDICES.out.rsem_index
+        rnaseq_indices_basename = RNASEQ_INDICES.out.rsem_basename
+    // If neither, throw error
+    } else {
+        error "Must provide either --rsem_index or both --fasta and --gtf to generate the RSEM index"
+    }
 
     if (params.concat_lanes){
         if (params.read_type == 'PE'){
@@ -79,7 +99,7 @@ workflow RNASEQ {
     READ_GROUPS(FASTP.out.trimmed_fastq, "picard")
 
     rsem_input = FASTP.out.trimmed_fastq.join(GET_READ_LENGTH.out.read_length)
-    RSEM_CALCULATE_EXPRESSION(rsem_input, RNASEQ_INDICES.out.rsem_index, RNASEQ_INDICES.out.rsem_basename)
+    RSEM_CALCULATE_EXPRESSION(rsem_input, rnaseq_indices_rsem, rnaseq_indices_basename)
 
     // Merge RSEM results across samples
     ch_genes = Channel.empty()
@@ -92,9 +112,9 @@ workflow RNASEQ {
     // Picard Alignment Metrics
     add_replace_groups = READ_GROUPS.out.read_groups.join(RSEM_CALCULATE_EXPRESSION.out.bam)
     PICARD_ADDORREPLACEREADGROUPS(add_replace_groups)
-    PICARD_REORDERSAM(PICARD_ADDORREPLACEREADGROUPS.out.bam, RNASEQ_INDICES.out.dict)
+    PICARD_REORDERSAM(PICARD_ADDORREPLACEREADGROUPS.out.bam, rnaseq_indices_dict)
     PICARD_SORTSAM(PICARD_REORDERSAM.out.bam)
-    PICARD_COLLECTRNASEQMETRICS(PICARD_SORTSAM.out.bam, RNASEQ_INDICES.out.refFlat, RNASEQ_INDICES.out.rRNA_intervals)
+    PICARD_COLLECTRNASEQMETRICS(PICARD_SORTSAM.out.bam, rnaseq_indices_refFlat, rnaseq_indices_rRNA_intervals)
     
     // Summary report generation
     ch_multiqc_files = Channel.empty()
