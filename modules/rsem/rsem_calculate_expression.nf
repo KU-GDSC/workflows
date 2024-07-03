@@ -1,9 +1,9 @@
 process RSEM_CALCULATE_EXPRESSION {
   tag "$sampleID"
 
-  cpus 12
-  memory 70.GB
-  time 24.h
+  cpus 6
+  memory 12.GB
+  time 30.m
 
   errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
 
