@@ -2,8 +2,8 @@
 nextflow.enable.dsl=2
 
 // import modules
-include {HELP} from "${projectDir}/etc/help/microbial_rnaseq"
-include {PARAM_LOG} from "${projectDir}/etc/log/microbial_rnaseq"
+include {HELP} from "${projectDir}/etc/help/rnaseq"
+include {PARAM_LOG} from "${projectDir}/etc/log/rnaseq"
 include {CONCATENATE_READS_PE} from "${projectDir}/modules/utility_modules/concatenate_reads_pe"
 include {CONCATENATE_READS_SE} from "${projectDir}/modules/utility_modules/concatenate_reads_se"
 include {GET_LIBRARY_ID} from "${projectDir}/etc/scripts/shared/getLibraryId.nf"
