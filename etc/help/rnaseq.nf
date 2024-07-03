@@ -19,5 +19,11 @@ Parameter | Default | Description
 --strandedness     | null | Library strandedness override. Supported options are "reverse_stranded" or "forward_stranded" or "non_stranded". This override parameter is only used when the tool `check_strandedness` fails to classify the strandedness of a sample. If the tool provides a strand direction, that determination is used." 
 
 --seed_length | 25 | Seed length used by the read aligner. Providing the correct value is important for RSEM. If RSEM runs Bowtie, it uses this value for Bowtie's seed length parameter.
+
+--fasta | null | Reference genome FASTA file for generation of RSEM indices. If provided, must also provide an annotation in the form of a GTF.
+
+--gtf | null | Annotation for reference genome. Along with a FASTA file used to generate RSEM indices.
+
+--rsem_index | null | An alternative to providing a FASTA and GTF is to include the path to pre-generated RSEM indices.
 '''
 }
