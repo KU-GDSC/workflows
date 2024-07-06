@@ -21,6 +21,7 @@ process UCSC_GTFTOGENEPRED {
     gtfToGenePred \
         -genePredExt \
         ${gtf} \
+        -ignoreGroupsWithoutExons \
         tmp_output.txt
 
     cat tmp_output.txt | awk -v OFS="\t" '{print \$12,\$1,\$2,\$3,\$4,\$5,\$6,\$7,\$8,\$9,\$10}' > ${gtf.baseName}.refFlat.txt

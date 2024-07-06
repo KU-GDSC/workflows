@@ -44,9 +44,11 @@ process RSEM_PREPAREREFERENCE {
             ${fasta} \
             rsem/${fasta.baseName}
 
-        cp ${gff} rsem/${fasta.baseName}.gtf
+        if [[ "${gff}" != "rsem/${fasta.baseName}.gtf" ]]
+        then
+            mv ${gff} rsem/${fasta.baseName}.gtf
+        fi
         rm ${fasta}
-        rm ${gff}
         """
     }
     else {
