@@ -10,6 +10,7 @@ include {FASTQC} from "${projectDir}/modules/fastqc/fastqc"
 include {READ_GROUPS} from "${projectDir}/modules/utility_modules/read_groups"
 include {BWA_MEM} from "${projectDir}/modules/bwa/bwa_mem"
 include {PICARD_SORTSAM} from "${projectDir}/modules/picard/picard_sortsam"
+include {PICARD_MARKDUPLICATES} from "${projectDir}/modules/picard/picard_markduplicates"
 include {PICARD_COLLECTALIGNMENTSUMMARYMETRICS} from "${projectDir}/modules/picard/picard_collectalignmentsummarymetrics"
 include {PICARD_COLLECTWGSMETRICS} from "${projectDir}/modules/picard/picard_collectwgsmetrics"
 include {BUNDLE_BAMS} from "${projectDir}/modules/utility_modules/bundle_bams"
@@ -60,14 +61,16 @@ workflow WGS {
 
   PICARD_SORTSAM(BWA_MEM.out.sam)
 
-  PICARD_COLLECTALIGNMENTSUMMARYMETRICS(PICARD_SORTSAM.out.bam)
+  PICARD_MARKDUPLICATES(PICARD_SORTSAM.out.bam)
 
-  PICARD_COLLECTWGSMETRICS(PICARD_SORTSAM.out.bam)
+  PICARD_COLLECTALIGNMENTSUMMARYMETRICS(PICARD_MARKDUPLICATES.out.dedup_bam)
+
+  PICARD_COLLECTWGSMETRICS(PICARD_MARKDUPLICATES.out.dedup_bam)
   
   ch_bams = Channel.empty()
-  ch_bams = ch_bams.mix(PICARD_SORTSAM.out.bam.collect{it[1]}.ifEmpty([]))
+  ch_bams = ch_bams.mix(PICARD_MARKDUPLICATES.out.dedup_bam.collect{it[1]}.ifEmpty([]))
   ch_bais = Channel.empty()
-  ch_bais = ch_bais.mix(PICARD_SORTSAM.out.bai.collect{it[1]}.ifEmpty([]))
+  ch_bais = ch_bais.mix(PICARD_MARKDUPLICATES.out.dedup_bai.collect{it[1]}.ifEmpty([]))
 
   BUNDLE_BAMS(ch_bams, ch_bais)
 
@@ -87,6 +90,7 @@ workflow WGS {
   ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
   ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTALIGNMENTSUMMARYMETRICS.out.txt.collect{it[1]}.ifEmpty([]))
   ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTWGSMETRICS.out.txt.collect{it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(PICARD_MARKDUPLICATES.out.dedup_metrics.collect{it[1]}.ifEmpty([]))
 
   MULTIQC (
       ch_multiqc_files.collect()
