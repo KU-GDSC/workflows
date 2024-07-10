@@ -15,10 +15,24 @@ table_columns_visible:
     percent_gc: False
     total_sequences: False
 
-extra_fn_clean_exts:
-  - "_sortsam"
-  - "_realigned_BQSR"
-  - "_FilterTrim"
-  - "_dedup"
-  - type: "truncate"
-    pattern: ".fastq"
+fn_clean_exts:
+  - ".gz"
+  - ".fastq"
+  - ".cnt"
+  - "_sortsam.bam"
+  - ".trimmed.R1"
+  - ".trimmed.R2"
+  - "_L001"
+  - "_L001_sortsam"
+  - "_R1_"
+  - "_R1"
+  - "_dedup.bam"
+
+remove_sections:
+  - fastqc_per_base_sequence_content
+  - fastqc_per_base_n_content
+  - fastqc_sequence_duplication_levels
+  - fastqc_overrepresented_sequences
+  - fastqc_per_sequence_gc_content
+  - fastp-seq-quality
+  - fastqc_status_checks
