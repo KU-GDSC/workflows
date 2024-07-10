@@ -55,7 +55,7 @@ workflow WGS {
   READ_GROUPS(FASTP.out.trimmed_fastq, 'GATK')
 
   bwa_input = FASTP.out.trimmed_fastq.join(READ_GROUPS.out.read_groups)
-                                     .combine(RAD_VARIANTS_INDICES.out.bwa_index)
+                                     .combine(WGS_INDICES.out.bwa_index)
   
   BWA_MEM(bwa_input)
 
