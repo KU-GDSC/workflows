@@ -10,6 +10,7 @@ include {GET_LIBRARY_ID} from "${projectDir}/etc/scripts/shared/getLibraryId.nf"
 include {GET_READ_LENGTH} from "${projectDir}/modules/utility_modules/get_read_length"
 include {RNASEQ_INDICES} from "${projectDir}/subworkflows/indices/rnaseq"
 include {FASTP} from "${projectDir}/modules/fastp/fastp"
+include {CHECK_STRANDEDNESS} from "${projectDir}/modules/python/python_check_strandedness"
 include {FASTQC} from "${projectDir}/modules/fastqc/fastqc"
 include {READ_GROUPS} from "${projectDir}/modules/utility_modules/read_groups"
 include {RSEM_CALCULATE_EXPRESSION} from "${projectDir}/modules/rsem/rsem_calculate_expression"
@@ -77,7 +78,10 @@ workflow RNASEQ {
         rnaseq_indices_refFlat = RNASEQ_INDICES.out.refFlat
         rnaseq_indices_rRNA_intervals = RNASEQ_INDICES.out.rRNA_intervals
         rnaseq_indices_rsem = RNASEQ_INDICES.out.rsem_index
+        rnaseq_indices_gtf = RNASEQ_INDICES.out.rsem_gtf
+        rnaseq_indices_transcripts = RNASEQ_INDICES.out.rsem_transcripts
         rnaseq_indices_basename = RNASEQ_INDICES.out.rsem_basename
+        rnaseq_indices_kallisto = RNASEQ_INDICES.out.kallisto_index
     // If neither, throw error
     } else {
         error "Must provide either --rsem_index or both --fasta and --gtf to generate the RSEM index"
@@ -98,7 +102,9 @@ workflow RNASEQ {
     FASTQC(FASTP.out.trimmed_fastq)
     READ_GROUPS(FASTP.out.trimmed_fastq, "picard")
 
-    rsem_input = FASTP.out.trimmed_fastq.join(GET_READ_LENGTH.out.read_length)
+    CHECK_STRANDEDNESS(FASTP.out.trimmed_fastq, rnaseq_indices_gtf, rnaseq_indices_kallisto)
+    rsem_input = FASTP.out.trimmed_fastq.join(GET_READ_LENGTH.out.read_length).join(CHECK_STRANDEDNESS.out.strand_setting)
+
     RSEM_CALCULATE_EXPRESSION(rsem_input, rnaseq_indices_rsem, rnaseq_indices_basename)
 
     // Merge RSEM results across samples
@@ -114,11 +120,12 @@ workflow RNASEQ {
     PICARD_ADDORREPLACEREADGROUPS(add_replace_groups)
     PICARD_REORDERSAM(PICARD_ADDORREPLACEREADGROUPS.out.bam, rnaseq_indices_dict)
     PICARD_SORTSAM(PICARD_REORDERSAM.out.bam)
-    PICARD_COLLECTRNASEQMETRICS(PICARD_SORTSAM.out.bam, rnaseq_indices_refFlat, rnaseq_indices_rRNA_intervals)
+    PICARD_COLLECTRNASEQMETRICS(PICARD_SORTSAM.out.bam.join(CHECK_STRANDEDNESS.out.strand_setting), rnaseq_indices_refFlat, rnaseq_indices_rRNA_intervals)
     
     // Summary report generation
     ch_multiqc_files = Channel.empty()
     ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(CHECK_STRANDEDNESS.out.strandedness_report.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(RSEM_CALCULATE_EXPRESSION.out.rsem_cnt.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTRNASEQMETRICS.out.picard_metrics.collect{it[1]}.ifEmpty([]))

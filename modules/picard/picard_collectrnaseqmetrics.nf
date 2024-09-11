@@ -13,7 +13,7 @@ process PICARD_COLLECTRNASEQMETRICS {
   publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID+'/stats' : 'picard' }", pattern: "*.pdf", mode:'copy'
 
   input:
-    tuple val(sampleID), file(bam)
+    tuple val(sampleID), file(bam), val(strandedness)
     val(ref_flat)
     val(ribo_intervals)
 
@@ -25,15 +25,15 @@ process PICARD_COLLECTRNASEQMETRICS {
     String my_mem = (task.memory-1.GB).toString()
     my_mem =  my_mem[0..-4]
     
-    if (params.strandedness == "reverse_stranded") {
+    if (strandedness == "reverse_stranded") {
       strand_setting = "SECOND_READ_TRANSCRIPTION_STRAND"
     }
 
-    if (params.strandedness == "forward_stranded") {
+    if (strandedness == "forward_stranded") {
       strand_setting = "FIRST_READ_TRANSCRIPTION_STRAND"
     }
 
-    if (params.strandedness == "non_stranded") {
+    if (strandedness == "non_stranded") {
       strand_setting = "NONE"
     }
 
