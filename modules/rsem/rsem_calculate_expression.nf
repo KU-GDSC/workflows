@@ -15,7 +15,7 @@ process RSEM_CALCULATE_EXPRESSION {
   publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID+'/bam' : 'rsem' }", pattern: "*transcript.sorted.ba*", mode:'copy'
 
   input:
-    tuple val(sampleID), path(reads), val(read_length)
+    tuple val(sampleID), path(reads), val(read_length), val(strand_setting)
     path(rsem_index)
     val(rsem_basename)
 
@@ -33,15 +33,15 @@ process RSEM_CALCULATE_EXPRESSION {
  
   script:
 
-    if (params.strandedness == "reverse_stranded") {
+    if (strand_setting == "reverse_stranded") {
       prob="--forward-prob 0"
     }
 
-    if (params.strandedness == "forward_stranded") {
+    if (strand_setting == "forward_stranded") {
       prob="--forward-prob 1"
     }
 
-    if (params.strandedness == "non_stranded") {
+    if (strand_setting == "non_stranded") {
       prob="--forward-prob 0.5"
     }
 

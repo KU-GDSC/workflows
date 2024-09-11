@@ -16,6 +16,7 @@ process RSEM_PREPAREREFERENCE {
   output:
     path("rsem"), emit: index
     path("rsem/${fasta.baseName}.gtf"), emit: gtf
+    path("rsem/${fasta.baseName}.transcripts.fa"), emit: transcripts
     val("${fasta.baseName}"), emit: basename
 
   script:
