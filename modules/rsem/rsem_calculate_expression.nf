@@ -61,44 +61,22 @@ process RSEM_CALCULATE_EXPRESSION {
     index_command=''
     read_length = read_length.toInteger()
 
-    if (params.rsem_index)
-        """
-        mkdir -p rsem
-        mv rsem_bowtie2.* rsem/
-        rsem-calculate-expression -p $task.cpus \
-            ${prob} \
-            ${stype} \
-            ${frag} \
-            --${params.rsem_aligner} \
-            --append-names \
-            ${seed_length} \
-            ${outbam} \
-            ${trimmedfq} \
-            rsem/${rsem_basename} \
-            ${sampleID} \
-            2> rsem_aln_${sampleID}.stats
+    """
+    rsem-calculate-expression -p $task.cpus \
+        ${prob} \
+        ${stype} \
+        ${frag} \
+        --${params.rsem_aligner} \
+        --append-names \
+        ${seed_length} \
+        ${outbam} \
+        ${trimmedfq} \
+        rsem_${params.rsem_aligner}/${rsem_basename} \
+        ${sampleID} \
+        2> rsem_aln_${sampleID}.stats
 
-            ${sort_command}
+        ${sort_command}
 
-            ${index_command}
-        """
-    else
-        """
-        rsem-calculate-expression -p $task.cpus \
-            ${prob} \
-            ${stype} \
-            ${frag} \
-            --${params.rsem_aligner} \
-            --append-names \
-            ${seed_length} \
-            ${outbam} \
-            ${trimmedfq} \
-            rsem/${rsem_basename} \
-            ${sampleID} \
-            2> rsem_aln_${sampleID}.stats
-
-            ${sort_command}
-
-            ${index_command}
-        """
+        ${index_command}
+    """
 }

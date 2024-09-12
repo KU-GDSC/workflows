@@ -9,7 +9,7 @@ process KALLISTO_INDEX {
 
     container 'quay.io/jaxcompsci/how-are-we-stranded-here:v1.0.1-e6ce74d'
 
-    publishDir "${params.pubdir}/index/rsem", pattern:"kallisto_index", mode:'copy'
+    publishDir "${params.pubdir}/index/rsem_${params.rsem_aligner}", pattern:"kallisto_index", mode:'copy'
 
     input:
         path(transcript_fasta)

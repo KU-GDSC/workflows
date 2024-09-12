@@ -8,6 +8,7 @@ include {CONCATENATE_READS_PE} from "${projectDir}/modules/utility_modules/conca
 include {CONCATENATE_READS_SE} from "${projectDir}/modules/utility_modules/concatenate_reads_se"
 include {GET_LIBRARY_ID} from "${projectDir}/etc/scripts/shared/getLibraryId.nf"
 include {GET_READ_LENGTH} from "${projectDir}/modules/utility_modules/get_read_length"
+include {PARSE_RNASEQ_INDICES} from "${projectDir}/modules/utility_modules/parse_rnaseq_indices"
 include {RNASEQ_INDICES} from "${projectDir}/subworkflows/indices/rnaseq"
 include {FASTP} from "${projectDir}/modules/fastp/fastp"
 include {CHECK_STRANDEDNESS} from "${projectDir}/modules/python/python_check_strandedness"
@@ -64,11 +65,17 @@ workflow RNASEQ {
 
     // If pre-generated indices provided, map to channels
     if (params.rsem_index) {
-        rnaseq_indices_dict = file("${params.rsem_index}/rsem_bowtie2.dict")
-        rnaseq_indices_refFlat = file("${params.rsem_index}/rsem_bowtie2.refFlat.txt")
-        rnaseq_indices_rRNA_intervals = file("${params.rsem_index}/rsem_bowtie2.rRNA_intervals.list")
-        rnaseq_indices_rsem = file("${params.rsem_index}/rsem_bowtie2.*").collect { "$it" }
-        rnaseq_indices_basename = Channel.value("rsem_bowtie2")
+        rnaseq_index_fh = Channel.value(file("${params.rsem_index}/*"))
+        rnaseq_index_fh_chrlist = Channel.value(file("${params.rsem_index}/*.chrlist"))
+        PARSE_RNASEQ_INDICES(rnaseq_index_fh, rnaseq_index_fh_chrlist)
+        rnaseq_indices_dict = PARSE_RNASEQ_INDICES.out.dict
+        rnaseq_indices_refFlat = PARSE_RNASEQ_INDICES.out.refFlat
+        rnaseq_indices_rRNA_intervals = PARSE_RNASEQ_INDICES.out.rRNA_intervals
+        rnaseq_indices_rsem = PARSE_RNASEQ_INDICES.out.rsem_index
+        rnaseq_indices_gtf = PARSE_RNASEQ_INDICES.out.rsem_gtf
+        rnaseq_indices_transcripts = PARSE_RNASEQ_INDICES.out.rsem_transcripts
+        rnaseq_indices_basename = PARSE_RNASEQ_INDICES.out.rsem_basename
+        rnaseq_indices_kallisto = PARSE_RNASEQ_INDICES.out.kallisto_index
 
     // Otherwise, if FASTA and GTF provided, generate indices
     } else if (params.fasta && params.gtf) {
@@ -103,8 +110,8 @@ workflow RNASEQ {
     READ_GROUPS(FASTP.out.trimmed_fastq, "picard")
 
     CHECK_STRANDEDNESS(FASTP.out.trimmed_fastq, rnaseq_indices_gtf, rnaseq_indices_kallisto)
-    rsem_input = FASTP.out.trimmed_fastq.join(GET_READ_LENGTH.out.read_length).join(CHECK_STRANDEDNESS.out.strand_setting)
 
+    rsem_input = FASTP.out.trimmed_fastq.join(GET_READ_LENGTH.out.read_length).join(CHECK_STRANDEDNESS.out.strand_setting)
     RSEM_CALCULATE_EXPRESSION(rsem_input, rnaseq_indices_rsem, rnaseq_indices_basename)
 
     // Merge RSEM results across samples

@@ -7,7 +7,7 @@ process UCSC_GTFTOGENEPRED {
 
   container "quay.io/biocontainers/ucsc-gtftogenepred:447--h954228d_0"
 
-  publishDir "${params.pubdir}/index", pattern: "${gtf.baseName}.refFlat.txt", mode:'copy'
+  publishDir "${params.pubdir}/index/rsem_${params.rsem_aligner}", pattern: "${gtf.baseName}.refFlat.txt", mode:'copy'
 
   input:
     path(gtf)
