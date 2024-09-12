@@ -7,16 +7,16 @@ process RSEM_PREPAREREFERENCE {
 
   container "quay.io/jaxcompsci/rsem_bowtie2_star:0.1.0"
 
-  publishDir "${params.pubdir}/index", pattern: "rsem", mode:'copy'
+  publishDir "${params.pubdir}/index", pattern: "rsem_${params.rsem_aligner}", mode:'copy'
 
   input:
-    path(fasta), stageAs: "rsem/*"
-    path(gff), stageAs: "rsem/*"
+    path(fasta), stageAs: "rsem_${params.rsem_aligner}/*"
+    path(gff), stageAs: "rsem_${params.rsem_aligner}/*"
 
   output:
-    path("rsem"), emit: index
-    path("rsem/${fasta.baseName}.gtf"), emit: gtf
-    path("rsem/${fasta.baseName}.transcripts.fa"), emit: transcripts
+    path("rsem_${params.rsem_aligner}"), emit: index
+    path("rsem_${params.rsem_aligner}/${fasta.baseName}.gtf"), emit: gtf
+    path("rsem_${params.rsem_aligner}/${fasta.baseName}.transcripts.fa"), emit: transcripts
     val("${fasta.baseName}"), emit: basename
 
   script:
@@ -24,12 +24,12 @@ process RSEM_PREPAREREFERENCE {
     if (params.workflow == "microbial_rnaseq") {
         """
         rsem-prepare-reference \
-            -p $task.cpus
+            -p $task.cpus \
             --gff3 ${gff} \
             --gff3-genes-as-transcripts \
             --bowtie2 \
             ${fasta} \
-            rsem/${fasta.baseName}
+            rsem_${params.rsem_aligner}/${fasta.baseName}
 
         rm ${fasta}
         rm ${gff}
@@ -43,11 +43,11 @@ process RSEM_PREPAREREFERENCE {
             --gtf ${gff} \
             --bowtie2 \
             ${fasta} \
-            rsem/${fasta.baseName}
+            rsem_${params.rsem_aligner}/${fasta.baseName}
 
-        if [[ "${gff}" != "rsem/${fasta.baseName}.gtf" ]]
+        if [[ "${gff}" != "rsem_${params.rsem_aligner}/${fasta.baseName}.gtf" ]]
         then
-            mv ${gff} rsem/${fasta.baseName}.gtf
+            mv ${gff} rsem_${params.rsem_aligner}/${fasta.baseName}.gtf
         fi
         rm ${fasta}
         """

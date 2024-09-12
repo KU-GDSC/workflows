@@ -9,7 +9,7 @@ process CHECK_STRANDEDNESS {
 
     container 'quay.io/jaxcompsci/how-are-we-stranded-here:v1.0.1-e6ce74d'
 
-    publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID + '/stats' : 'python' }", pattern:"*_strandedness.txt", mode:'copy'
+    publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID + '/stats' : 'python' }", pattern:"*_strandedness.txt", mode:'copy', enabled: params.workflow == "rnaseq"
 
     input:
         tuple val(sampleID), path(reads)
@@ -52,13 +52,13 @@ process CHECK_STRANDEDNESS {
         
         fi
         """
-        else if (params.workflow == "microbial_rnaseq")
+        else if (params.workflow == "microbial_rnaseq" && params.strandedness)
         """
-        if [[ ${params.strandedness} == "reverse_stranded" || ${params.strandedness} == "forward_stranded" || ${params.strandedness} == "non_stranded" ]] ; then
-            STRAND='${params.strandedness}'
-            printf "Automatic strand determination not implemented for microbial data, specified ${params.strandedness} at runtime" > ${sampleID}_strandedness.txt
-        else
-            echo "Automatic strand determination is not implemented for microbial data. You must specify strandedness with the parameter '--strandedness' and one of the values 'forward_stranded', 'reverse_stranded', or 'non_stranded'; exit 42;
-        fi
+        STRAND="${params.strandedness}"
+        printf "Automatic strand determination not implemented for microbial data, specified ${params.strandedness} at runtime\n" > ${sampleID}_strandedness.txt
         """
+
+        else {
+            error("Automatic strand determination is not implemented for microbial data. You must specify strandedness with the parameter '--strandedness' and one of the values 'forward_stranded', 'reverse_stranded', or 'non_stranded")
+        }       
 }
