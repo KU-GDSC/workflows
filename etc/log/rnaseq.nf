@@ -22,6 +22,9 @@ ______________________________________________________
 --unqualified_perc           ${params.unqualified_perc}
 --strandedness               ${params.strandedness}
 --seed_length                ${params.seed_length}
+--fasta                      ${params.fasta}
+--gtf                        ${params.gtf}
+--rsem_index                 ${params.rsem_index}
 
 Project Directory: ${projectDir}
 
