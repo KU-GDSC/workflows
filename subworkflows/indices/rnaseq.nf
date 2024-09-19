@@ -14,12 +14,13 @@ workflow RNASEQ_INDICES {
         fasta           //      file: /path/to/genome.fasta
         gff             //      file: /path/to/genome.gff
         read_length     //      value: GET_READ_LENGTH.out.read_length
+        read_unique     //      value: 
 
     main:
         ch_fasta = Channel.value(file(fasta))
         ch_gff = Channel.value(file(gff))
 
-        RSEM_PREPAREREFERENCE(ch_fasta, ch_gff, read_length)
+        RSEM_PREPAREREFERENCE(ch_fasta, ch_gff, read_length, read_unique)
         rsem_index = RSEM_PREPAREREFERENCE.out.index
         rsem_basename= RSEM_PREPAREREFERENCE.out.basename
         rsem_gtf = RSEM_PREPAREREFERENCE.out.gtf

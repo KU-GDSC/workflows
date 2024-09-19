@@ -65,12 +65,8 @@ workflow RNASEQ {
     // Get read lenghts from FASTQs
     GET_READ_LENGTH(read_ch)
     ch_read_lengths = GET_READ_LENGTH.out.read_length.collect{ it[1].toInteger() - 1}.flatten()
-    if (ch_read_lengths.unique().count() != 1 && params.rsem_aligner == "star") {
-        error "Multiple read lengths detected in FASTQ data and STAR indicies requested. STAR uses read length for index generation, so either separate data into different read length groups or rerun the workflow with 'rsem_aligner bowtie2'"
-    }
-    else {
-        ch_rsem_read_length = ch_read_lengths.first()
-    }
+    ch_rsem_read_length_unique = ch_read_lengths.unique().count()
+    ch_rsem_read_length = ch_read_lengths.first()
 
     // Initialize or generate RSEM indices
     // If pre-generated indices provided, map to channels
@@ -90,7 +86,7 @@ workflow RNASEQ {
     // Otherwise, if FASTA and GTF provided, generate indices
     } else if (params.fasta && params.gtf) {
 
-        RNASEQ_INDICES(params.fasta, params.gtf, ch_rsem_read_length)
+        RNASEQ_INDICES(params.fasta, params.gtf, ch_rsem_read_length, ch_rsem_read_length_unique)
         rnaseq_indices_dict = RNASEQ_INDICES.out.dict
         rnaseq_indices_refFlat = RNASEQ_INDICES.out.refFlat
         rnaseq_indices_rRNA_intervals = RNASEQ_INDICES.out.rRNA_intervals
