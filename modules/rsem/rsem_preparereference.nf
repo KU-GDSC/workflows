@@ -62,7 +62,7 @@ process RSEM_PREPAREREFERENCE {
             -p $task.cpus \
             --gtf ${gff} \
             --star \
-            --star-sjdboverhang ${read_length} \
+            --star-sjdboverhang ${read_length - 1} \
             ${fasta} \
             rsem_${params.rsem_aligner}/${fasta.baseName}
  
