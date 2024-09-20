@@ -64,7 +64,7 @@ workflow RNASEQ {
 
     // Get read lenghts from FASTQs
     GET_READ_LENGTH(read_ch)
-    ch_read_lengths = GET_READ_LENGTH.out.read_length.collect{ it[1].toInteger() - 1}.flatten()
+    ch_read_lengths = GET_READ_LENGTH.out.read_length.collect{ it[1].toInteger() }.flatten()
     ch_rsem_read_length_unique = ch_read_lengths.unique().count()
     ch_rsem_read_length = ch_read_lengths.first()
 

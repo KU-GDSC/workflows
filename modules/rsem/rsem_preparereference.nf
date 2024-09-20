@@ -72,7 +72,7 @@ process RSEM_PREPAREREFERENCE {
             ${fasta} \
             rsem_${params.rsem_aligner}/${fasta.baseName}
 
-        printf "Prepared RSEM index for ${params.rsem_aligner} with `basename ${fasta}` and `basename ${gff}` \n" > README
+        printf "Prepared RSEM index for ${params.rsem_aligner} with `basename ${fasta}` and `basename ${gff}` for ${read_length}bp reads \n" > README
 
         if [[ "${gff}" != "rsem_${params.rsem_aligner}/${fasta.baseName}.gtf" ]]
         then
