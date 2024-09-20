@@ -7,7 +7,9 @@ process RSEM_PREPAREREFERENCE {
 
   container "quay.io/jaxcompsci/rsem_bowtie2_star:0.1.0"
 
-  publishDir "${params.pubdir}/index", pattern: "rsem_${params.rsem_aligner}", mode:'copy'
+  publishDir "${params.pubdir}/index", pattern: "rsem_${params.rsem_aligner}", mode:'copy', enabled: params.keep_reference
+
+  publishDir "${params.pubdir}/index", pattern: "README", mode:'copy', enabled: params.keep_reference
 
   input:
     path(fasta), stageAs: "rsem_${params.rsem_aligner}/*"
@@ -20,6 +22,7 @@ process RSEM_PREPAREREFERENCE {
     path("rsem_${params.rsem_aligner}/${fasta.baseName}.gtf"), emit: gtf
     path("rsem_${params.rsem_aligner}/${fasta.baseName}.transcripts.fa"), emit: transcripts
     val("${fasta.baseName}"), emit: basename
+    path("README"), emit: readme
 
   script:
 
@@ -33,6 +36,7 @@ process RSEM_PREPAREREFERENCE {
             ${fasta} \
             rsem_${params.rsem_aligner}/${fasta.baseName}
 
+        printf "Prepared RSEM index for ${params.rsem_aligner} with `basename ${fasta}` and `basename ${gff}` \n" > README
         rm ${fasta}
         rm ${gff}
         """
@@ -46,6 +50,8 @@ process RSEM_PREPAREREFERENCE {
             --bowtie2 \
             ${fasta} \
             rsem_${params.rsem_aligner}/${fasta.baseName}
+
+        printf "Prepared RSEM index for ${params.rsem_aligner} with `basename ${fasta}` and `basename ${gff}` \n" > README
 
         if [[ "${gff}" != "rsem_${params.rsem_aligner}/${fasta.baseName}.gtf" ]]
         then
@@ -65,7 +71,9 @@ process RSEM_PREPAREREFERENCE {
             --star-sjdboverhang ${read_length - 1} \
             ${fasta} \
             rsem_${params.rsem_aligner}/${fasta.baseName}
- 
+
+        printf "Prepared RSEM index for ${params.rsem_aligner} with `basename ${fasta}` and `basename ${gff}` for ${read_length}bp reads \n" > README
+
         if [[ "${gff}" != "rsem_${params.rsem_aligner}/${fasta.baseName}.gtf" ]]
         then
             mv ${gff} rsem_${params.rsem_aligner}/${fasta.baseName}.gtf
