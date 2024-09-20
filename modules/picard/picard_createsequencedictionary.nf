@@ -9,7 +9,7 @@ process PICARD_CREATESEQUENCEDICTIONARY {
 
   container "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
 
-  publishDir "${params.pubdir}/index/rsem_${params.rsem_aligner}", pattern: "${fasta.baseName}.dict", mode:'copy'
+  publishDir "${params.pubdir}/index", pattern: "${fasta.baseName}.dict", mode:'copy', enabled: params.keep_reference
 
   input:
     path(fasta)

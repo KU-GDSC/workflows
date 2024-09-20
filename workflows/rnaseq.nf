@@ -71,8 +71,8 @@ workflow RNASEQ {
     // Initialize or generate RSEM indices
     // If pre-generated indices provided, map to channels
     if (params.rsem_index) {
-        rnaseq_index_fh = Channel.value(file("${params.rsem_index}/*"))
-        rnaseq_index_fh_chrlist = Channel.value(file("${params.rsem_index}/*.chrlist"))
+        rnaseq_index_fh = Channel.value(file("${params.rsem_index}/**"))
+        rnaseq_index_fh_chrlist = Channel.value(file("${params.rsem_index}/**.chrlist"))
         PARSE_RNASEQ_INDICES(rnaseq_index_fh, rnaseq_index_fh_chrlist)
         rnaseq_indices_dict = PARSE_RNASEQ_INDICES.out.dict
         rnaseq_indices_refFlat = PARSE_RNASEQ_INDICES.out.refFlat
