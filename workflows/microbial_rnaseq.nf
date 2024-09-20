@@ -107,6 +107,8 @@ workflow MICROBIAL_RNASEQ {
     }
 
     GET_READ_LENGTH(read_ch)
+    
+    // Generate RSEM indices
     FASTP(read_ch)
     FASTQC(FASTP.out.trimmed_fastq)
     READ_GROUPS(FASTP.out.trimmed_fastq, "picard")

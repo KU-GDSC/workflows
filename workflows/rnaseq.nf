@@ -61,8 +61,14 @@ if (params.read_type == 'PE'){
 }
 
 workflow RNASEQ {
-    // Initialize or generate RSEM indices
 
+    // Get read lenghts from FASTQs
+    GET_READ_LENGTH(read_ch)
+    ch_read_lengths = GET_READ_LENGTH.out.read_length.collect{ it[1].toInteger() - 1}.flatten()
+    ch_rsem_read_length_unique = ch_read_lengths.unique().count()
+    ch_rsem_read_length = ch_read_lengths.first()
+
+    // Initialize or generate RSEM indices
     // If pre-generated indices provided, map to channels
     if (params.rsem_index) {
         rnaseq_index_fh = Channel.value(file("${params.rsem_index}/*"))
@@ -80,7 +86,7 @@ workflow RNASEQ {
     // Otherwise, if FASTA and GTF provided, generate indices
     } else if (params.fasta && params.gtf) {
 
-        RNASEQ_INDICES(params.fasta, params.gtf)
+        RNASEQ_INDICES(params.fasta, params.gtf, ch_rsem_read_length, ch_rsem_read_length_unique)
         rnaseq_indices_dict = RNASEQ_INDICES.out.dict
         rnaseq_indices_refFlat = RNASEQ_INDICES.out.refFlat
         rnaseq_indices_rRNA_intervals = RNASEQ_INDICES.out.rRNA_intervals
@@ -104,7 +110,6 @@ workflow RNASEQ {
         }
     }
 
-    GET_READ_LENGTH(read_ch)
     FASTP(read_ch)
     FASTQC(FASTP.out.trimmed_fastq)
     READ_GROUPS(FASTP.out.trimmed_fastq, "picard")
@@ -135,6 +140,7 @@ workflow RNASEQ {
     ch_multiqc_files = ch_multiqc_files.mix(CHECK_STRANDEDNESS.out.strandedness_report.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(RSEM_CALCULATE_EXPRESSION.out.rsem_cnt.collect{it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(RSEM_CALCULATE_EXPRESSION.out.star_log.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTRNASEQMETRICS.out.picard_metrics.collect{it[1]}.ifEmpty([]))
 
     MULTIQC (

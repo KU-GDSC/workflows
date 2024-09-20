@@ -12,6 +12,8 @@ process RSEM_PREPAREREFERENCE {
   input:
     path(fasta), stageAs: "rsem_${params.rsem_aligner}/*"
     path(gff), stageAs: "rsem_${params.rsem_aligner}/*"
+    val(read_length)
+    val(read_unique)
 
   output:
     path("rsem_${params.rsem_aligner}"), emit: index
@@ -36,7 +38,7 @@ process RSEM_PREPAREREFERENCE {
         """
         }
 
-    else if (params.workflow == "rnaseq") {
+    else if (params.workflow == "rnaseq" & params.rsem_aligner == "bowtie2") {
         """
         rsem-prepare-reference \
             -p $task.cpus \
@@ -52,7 +54,29 @@ process RSEM_PREPAREREFERENCE {
         rm ${fasta}
         """
     }
+
+    else if (params.workflow == "rnaseq" & params.rsem_aligner == "star" & read_unique == 1) {
+       
+        """
+        rsem-prepare-reference \
+            -p $task.cpus \
+            --gtf ${gff} \
+            --star \
+            --star-sjdboverhang ${read_length - 1} \
+            ${fasta} \
+            rsem_${params.rsem_aligner}/${fasta.baseName}
+ 
+        if [[ "${gff}" != "rsem_${params.rsem_aligner}/${fasta.baseName}.gtf" ]]
+        then
+            mv ${gff} rsem_${params.rsem_aligner}/${fasta.baseName}.gtf
+        fi
+        rm ${fasta}          
+        """
+    }
+    else if (params.workflow == "rnaseq" & params.rsem_aligner == "star" & read_unique != 1)  {
+        error("Multiple read lengths detected in FASTQ data and STAR indicies requested. STAR uses read length for index generation, so either separate data into different read length groups or rerun the workflow with 'rsem_aligner bowtie2'")
+    }
     else {
-        error("The workflow " $params.workflow " is not currently supported")
+        error("The workflow " $params.workflow " or the aligner " $params.rsem_aligner " is not currently supported")
         }
 }

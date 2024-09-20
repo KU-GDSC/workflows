@@ -18,7 +18,10 @@ workflow RNASEQ_INDICES {
         ch_fasta = Channel.value(file(fasta))
         ch_gff = Channel.value(file(gff))
 
-        RSEM_PREPAREREFERENCE(ch_fasta, ch_gff)
+        read_length = Channel.value(100)
+        read_unique = Channel.value(2)
+
+        RSEM_PREPAREREFERENCE(ch_fasta, ch_gff, read_length, read_unique)
         rsem_index = RSEM_PREPAREREFERENCE.out.index
         rsem_basename= RSEM_PREPAREREFERENCE.out.basename
         rsem_gtf = RSEM_PREPAREREFERENCE.out.gtf

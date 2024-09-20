@@ -24,13 +24,43 @@ process PARSE_RNASEQ_INDICES {
     path("rsem_${params.rsem_aligner}/kallisto_index"), emit: kallisto_index
 
   script:
-  """
-  rsem_basename=${rsem_chrlist.baseName}
-  mkdir rsem_${params.rsem_aligner}
-  mv kallisto_index rsem_${params.rsem_aligner}/
-  mv *.refFlat.txt rsem_${params.rsem_aligner}/
-  mv *.rRNA_intervals.list rsem_${params.rsem_aligner}/
-  mv *.dict rsem_${params.rsem_aligner}/
-  mv ${rsem_chrlist.baseName}.* rsem_${params.rsem_aligner}/
-  """
+  if (params.rsem_aligner == "bowtie2") {
+      """
+      rsem_basename=${rsem_chrlist.baseName}
+      mkdir rsem_${params.rsem_aligner}
+      mv kallisto_index rsem_${params.rsem_aligner}/
+      mv *.refFlat.txt rsem_${params.rsem_aligner}/
+      mv *.rRNA_intervals.list rsem_${params.rsem_aligner}/
+      mv *.dict rsem_${params.rsem_aligner}/
+      mv ${rsem_chrlist.baseName}.* rsem_${params.rsem_aligner}/
+      """
+  } else if (params.rsem_aligner == "star") {
+      """
+      rsem_basename=${rsem_chrlist.baseName}
+      mkdir rsem_${params.rsem_aligner}
+      mv kallisto_index rsem_${params.rsem_aligner}/
+      mv *.refFlat.txt rsem_${params.rsem_aligner}/
+      mv *.rRNA_intervals.list rsem_${params.rsem_aligner}/
+      mv *.dict rsem_${params.rsem_aligner}/
+      mv ${rsem_chrlist.baseName}.* rsem_${params.rsem_aligner}/
+      mv chrLength.txt rsem_${params.rsem_aligner}/
+      mv exonGeTrInfo.tab rsem_${params.rsem_aligner}/
+      mv chrNameLength.txt rsem_${params.rsem_aligner}/
+      mv exonInfo.tab rsem_${params.rsem_aligner}/
+      mv chrName.txt rsem_${params.rsem_aligner}/
+      mv geneInfo.tab rsem_${params.rsem_aligner}/
+      mv chrStart.txt rsem_${params.rsem_aligner}/
+      mv Genome rsem_${params.rsem_aligner}/
+      mv genomeParameters.txt rsem_${params.rsem_aligner}/
+      mv Log.out rsem_${params.rsem_aligner}/
+      mv SA rsem_${params.rsem_aligner}/
+      mv SAindex rsem_${params.rsem_aligner}/
+      mv sjdbInfo.txt rsem_${params.rsem_aligner}/
+      mv sjdbList.fromGTF.out.tab rsem_${params.rsem_aligner}/
+      mv sjdbList.out.tab rsem_${params.rsem_aligner}/
+      mv transcriptInfo.tab rsem_${params.rsem_aligner}/
+      """
+  } else {
+    error("The workflow " ${params.workflow} " or the aligner " ${params.rsem_aligner} " is not currently supported")
+  }
 }
