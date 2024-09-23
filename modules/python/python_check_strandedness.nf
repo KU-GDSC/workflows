@@ -23,15 +23,8 @@ process CHECK_STRANDEDNESS {
     script:
         paired = params.read_type == 'PE' ? "-r2 ${reads[1]}" : ''
 
-        if (params.workflow == "rnaseq") {
-            use_gtf="${rsem_gtf}"
-        }
-
-        else if (params.workflow == "microbial_rnaseq") {
-            use_gtf="${params.gff}"
-        }
         """
-        check_strandedness -g ${use_gtf} -k ${kallisto_index} -r1 ${reads[0]} ${paired} > ${sampleID}_strandedness.txt 2>&1
+        check_strandedness -g ${rsem_gtf} -k ${kallisto_index} -r1 ${reads[0]} ${paired} > ${sampleID}_strandedness.txt 2>&1
 
         if grep -q "Data is likely" ${sampleID}_strandedness.txt; then
             

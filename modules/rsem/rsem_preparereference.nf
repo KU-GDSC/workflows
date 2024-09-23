@@ -38,7 +38,6 @@ process RSEM_PREPAREREFERENCE {
 
         printf "Prepared RSEM index for ${params.rsem_aligner} with `basename ${fasta}` and `basename ${gff}` \n" > README
         rm ${fasta}
-        rm ${gff}
         """
         }
 

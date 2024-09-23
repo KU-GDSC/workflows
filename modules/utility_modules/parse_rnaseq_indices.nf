@@ -18,13 +18,13 @@ process PARSE_RNASEQ_INDICES {
     path("rsem_${params.rsem_aligner}/*.refFlat.txt"), emit: refFlat
     path("rsem_${params.rsem_aligner}/*.rRNA_intervals.list"), emit: rRNA_intervals
     path("rsem_${params.rsem_aligner}"), emit: rsem_index
-    path("rsem_${params.rsem_aligner}/${rsem_chrlist.baseName}.gtf"), emit: rsem_gtf
+    path("rsem_${params.rsem_aligner}/${rsem_chrlist.baseName}.g*f"), emit: rsem_gtf
     path("rsem_${params.rsem_aligner}/${rsem_chrlist.baseName}.transcripts.fa"), emit: rsem_transcripts
     val("${rsem_chrlist.baseName}"), emit: rsem_basename
     path("rsem_${params.rsem_aligner}/kallisto_index"), emit: kallisto_index
 
   script:
-  if (params.rsem_aligner == "bowtie2") {
+  if (params.rsem_aligner == "bowtie2" & params.workflow == "rnaseq") {
       """
       rsem_basename=${rsem_chrlist.baseName}
       mkdir rsem_${params.rsem_aligner}
@@ -33,6 +33,18 @@ process PARSE_RNASEQ_INDICES {
       mv *.rRNA_intervals.list rsem_${params.rsem_aligner}/
       mv *.dict rsem_${params.rsem_aligner}/
       mv ${rsem_chrlist.baseName}.* rsem_${params.rsem_aligner}/
+      """
+  } else if (params.rsem_aligner == "bowtie2" & params.workflow == "microbial_rnaseq") {
+      """
+      rsem_basename=${rsem_chrlist.baseName}
+      mkdir rsem_${params.rsem_aligner}
+      mv kallisto_index rsem_${params.rsem_aligner}/
+      mv *.refFlat.txt rsem_${params.rsem_aligner}/
+      mv *.rRNA_intervals.list rsem_${params.rsem_aligner}/
+      mv *.dict rsem_${params.rsem_aligner}/
+      mv ${rsem_chrlist.baseName}.* rsem_${params.rsem_aligner}/
+      mv *.gff rsem_${params.rsem_aligner}/${rsem_chrlist.baseName}.gff
+      rm rsem_${params.rsem_aligner}/${rsem_chrlist.baseName}.gtf
       """
   } else if (params.rsem_aligner == "star") {
       """
