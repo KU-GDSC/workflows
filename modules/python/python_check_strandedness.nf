@@ -9,7 +9,7 @@ process CHECK_STRANDEDNESS {
 
     container 'quay.io/jaxcompsci/how-are-we-stranded-here:v1.0.1-e6ce74d'
 
-    publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID + '/stats' : 'python' }", pattern:"*_strandedness.txt", mode:'copy', enabled: params.workflow == "rnaseq"
+    publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID + '/stats' : 'python' }", pattern:"*_strandedness.txt", mode:'copy'
 
     input:
         tuple val(sampleID), path(reads)
@@ -23,10 +23,15 @@ process CHECK_STRANDEDNESS {
     script:
         paired = params.read_type == 'PE' ? "-r2 ${reads[1]}" : ''
 
-        if (params.workflow == "rnaseq")
-        """
-        check_strandedness -g ${rsem_gtf} -k ${kallisto_index} -r1 ${reads[0]} ${paired} > ${sampleID}_strandedness.txt 2>&1
+        if (params.workflow == "rnaseq") {
+            use_gtf="${rsem_gtf}"
+        }
 
+        else if (params.workflow == "microbial_rnaseq") {
+            use_gtf="${params.gff}"
+        }
+        """
+        check_strandedness -g ${use_gtf} -k ${kallisto_index} -r1 ${reads[0]} ${paired} > ${sampleID}_strandedness.txt 2>&1
 
         if grep -q "Data is likely" ${sampleID}_strandedness.txt; then
             
@@ -52,13 +57,4 @@ process CHECK_STRANDEDNESS {
         
         fi
         """
-        else if (params.workflow == "microbial_rnaseq" && params.strandedness)
-        """
-        STRAND="${params.strandedness}"
-        printf "Automatic strand determination not implemented for microbial data, specified ${params.strandedness} at runtime\n" > ${sampleID}_strandedness.txt
-        """
-
-        else {
-            error("Automatic strand determination is not implemented for microbial data. You must specify strandedness with the parameter '--strandedness' and one of the values 'forward_stranded', 'reverse_stranded', or 'non_stranded")
-        }       
 }
