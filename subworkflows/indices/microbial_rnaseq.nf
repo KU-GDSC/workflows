@@ -24,7 +24,7 @@ workflow RNASEQ_INDICES {
         RSEM_PREPAREREFERENCE(ch_fasta, ch_gff, read_length, read_unique)
         rsem_index = RSEM_PREPAREREFERENCE.out.index
         rsem_basename= RSEM_PREPAREREFERENCE.out.basename
-        rsem_gtf = RSEM_PREPAREREFERENCE.out.gtf
+        rsem_gtf = ch_gff
         rsem_transcripts = RSEM_PREPAREREFERENCE.out.transcripts
 
         UCSC_GTFTOGENEPRED(RSEM_PREPAREREFERENCE.out.gtf)
