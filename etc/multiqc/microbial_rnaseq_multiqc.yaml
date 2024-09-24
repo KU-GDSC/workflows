@@ -27,6 +27,11 @@ fn_clean_exts:
   - "_R1_"
   - "_R1"
 
-custom_logo: "${projectDir}/etc/multiqc/K-INBRE_logo_words_small.png"
-custom_logo_url: "https://www.k-inbre.org"
-custom_logo_title: "K-INBRE"
+remove_sections:
+  - fastqc_per_base_sequence_content
+  - fastqc_per_base_n_content
+  - fastqc_sequence_duplication_levels
+  - fastqc_overrepresented_sequences
+  - fastqc_per_sequence_gc_content
+  - fastp-seq-quality
+  - fastqc_status_checks
