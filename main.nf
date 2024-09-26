@@ -7,6 +7,10 @@ if (params.workflow == "microbial_rnaseq"){
   include {MICROBIAL_RNASEQ} from './workflows/microbial_rnaseq'
 }
 
+else if (params.workflow == "rnaseq") {
+  include {RNASEQ} from './workflows/rnaseq'
+}
+
 else {
   // if workflow name is not supported: 
   exit 1, "ERROR: No valid pipeline called. '--workflow ${params.workflow}' is not a valid workflow name."
@@ -17,4 +21,7 @@ workflow{
   if (params.workflow == "microbial_rnaseq") {
     MICROBIAL_RNASEQ()
     }
+  if (params.workflow == "rnaseq") {
+    RNASEQ()
+  }
 }

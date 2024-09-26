@@ -1,7 +1,7 @@
 def PARAM_LOG(){
 
 log.info """
-MICROBIAL RNASEQ PARAMETER LOG
+RNASEQ PARAMETER LOG
 
 --comment: ${params.comment}
 
@@ -24,7 +24,7 @@ ______________________________________________________
 --strandedness               ${params.strandedness}
 --seed_length                ${params.seed_length}
 --fasta                      ${params.fasta}
---gff                        ${params.gff}
+--gtf                        ${params.gtf}
 --rsem_index                 ${params.rsem_index}
 --rsem_aligner               ${params.rsem_aligner}
 

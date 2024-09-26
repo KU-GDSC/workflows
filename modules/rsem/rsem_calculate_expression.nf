@@ -15,7 +15,7 @@ process RSEM_CALCULATE_EXPRESSION {
   publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID+'/bam' : 'rsem' }", pattern: "*transcript.sorted.ba*", mode:'copy'
 
   input:
-    tuple val(sampleID), path(reads), val(read_length)
+    tuple val(sampleID), path(reads), val(read_length), val(strand_setting)
     path(rsem_index)
     val(rsem_basename)
 
@@ -30,18 +30,19 @@ process RSEM_CALCULATE_EXPRESSION {
     tuple val(sampleID), path("*.transcript.bam"), emit: transcript_bam
     tuple val(sampleID), path("*.genome.sorted.bam"), path("*.genome.sorted.bam.bai"), emit: sorted_genomic_bam
     tuple val(sampleID), path("*.transcript.sorted.bam"), path("*.transcript.sorted.bam.bai"), emit: sorted_transcript_bam
+    tuple val(sampleID), path("*final.out"), emit: star_log, optional: true
  
   script:
 
-    if (params.strandedness == "reverse_stranded") {
+    if (strand_setting == "reverse_stranded") {
       prob="--forward-prob 0"
     }
 
-    if (params.strandedness == "forward_stranded") {
+    if (strand_setting == "forward_stranded") {
       prob="--forward-prob 1"
     }
 
-    if (params.strandedness == "non_stranded") {
+    if (strand_setting == "non_stranded") {
       prob="--forward-prob 0.5"
     }
 
@@ -55,14 +56,26 @@ process RSEM_CALCULATE_EXPRESSION {
       stype=""
       trimmedfq="${reads[0]}"
     }
-    outbam="--output-genome-bam --sort-bam-by-coordinate"
-    seed_length="--seed-length ${params.seed_length}"
-    sort_command=''
-    index_command=''
+    if (params.rsem_aligner == "bowtie2") {
+        outbam="--output-genome-bam --sort-bam-by-coordinate"
+        seed_length="--seed-length ${params.seed_length}"
+        sort_command=''
+        index_command=''
+        intermediate=''
+        star_log=''
+    }
+    if (params.rsem_aligner == "star") {
+        outbam="--star-output-genome-bam --sort-bam-by-coordinate"
+        seed_length=""
+        samtools_mem = (int)(task.memory.giga / task.cpus)
+        sort_command="samtools sort -@ 6 -m 5G -o ${sampleID}.STAR.genome.sorted.bam ${sampleID}.STAR.genome.bam"
+        index_command="samtools index ${sampleID}.STAR.genome.sorted.bam"
+        intermediate="--keep-intermediate-files"
+        star_log="cp ${sampleID}.temp/*.final.out ./${sampleID}.STAR.Log.final.out && rm -r ${sampleID}.temp"
+    }
+
     read_length = read_length.toInteger()
-
     """
-
     rsem-calculate-expression -p $task.cpus \
         ${prob} \
         ${stype} \
@@ -72,12 +85,16 @@ process RSEM_CALCULATE_EXPRESSION {
         ${seed_length} \
         ${outbam} \
         ${trimmedfq} \
-        rsem/${rsem_basename} \
+        rsem_${params.rsem_aligner}/${rsem_basename} \
         ${sampleID} \
+        ${intermediate} \
+        --sort-bam-memory-per-thread 5G \
         2> rsem_aln_${sampleID}.stats
+
+        ${star_log}
 
         ${sort_command}
 
         ${index_command}
-  """
+    """
 }
