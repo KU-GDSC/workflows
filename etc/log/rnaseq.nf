@@ -17,6 +17,7 @@ ______________________________________________________
 --pubdir                     ${params.pubdir}
 -w                           ${workDir}
 --keep_intermediate          ${params.keep_intermediate}
+--keep_reference             ${params.keep_reference}
 -c                           ${params.config}
 --quality_phred              ${params.quality_phred}
 --unqualified_perc           ${params.unqualified_perc}
@@ -25,6 +26,7 @@ ______________________________________________________
 --fasta                      ${params.fasta}
 --gtf                        ${params.gtf}
 --rsem_index                 ${params.rsem_index}
+--rsem_aligner               ${params.rsem_aligner}
 
 Project Directory: ${projectDir}
 

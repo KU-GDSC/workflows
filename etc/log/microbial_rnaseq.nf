@@ -17,11 +17,16 @@ ______________________________________________________
 --pubdir                     ${params.pubdir}
 -w                           ${workDir}
 --keep_intermediate          ${params.keep_intermediate}
+--keep_reference             ${params.keep_reference}
 -c                           ${params.config}
 --quality_phred              ${params.quality_phred}
 --unqualified_perc           ${params.unqualified_perc}
 --strandedness               ${params.strandedness}
 --seed_length                ${params.seed_length}
+--fasta                      ${params.fasta}
+--gff                        ${params.gff}
+--rsem_index                 ${params.rsem_index}
+--rsem_aligner               ${params.rsem_aligner}
 
 Project Directory: ${projectDir}
 

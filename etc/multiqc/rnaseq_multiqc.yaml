@@ -35,7 +35,3 @@ remove_sections:
   - fastqc_per_sequence_gc_content
   - fastp-seq-quality
   - fastqc_status_checks
-
-custom_logo: "${projectDir}/etc/multiqc/K-INBRE_logo_words_small.png"
-custom_logo_url: "https://www.k-inbre.org"
-custom_logo_title: "K-INBRE"
