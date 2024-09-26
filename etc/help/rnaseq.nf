@@ -8,7 +8,7 @@ Parameter | Default | Description
 
 --rsem_index | null | The path to a directory containing pre-generated RSEM indices prepared by this workflow. An error will occur if any files are missing.
 
---rsem_aligner | bowtie2 | The program used by RSEM to align reads prior to count quantification. At present only bowtie2 is supported by this workflow.
+--rsem_aligner | bowtie2 | The program used by RSEM to align reads prior to count quantification. Valid options are "bowtie2" and "star" 
 
 --sample_folder | /<PATH> | The path to the folder that contains all the samples to be run by the pipeline. The files in this path can also be symbolic links. 
 
