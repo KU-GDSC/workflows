@@ -8,7 +8,7 @@ process SAMTOOLS_FAIDX {
   
   container 'quay.io/biocontainers/samtools:1.14--hb421002_0'
 
-  publishDir "${params.pubdir}/reference", mode: 'copy', enabled: params.save_references
+  publishDir "${params.pubdir}/index", mode: 'copy', enabled: params.keep_reference
 
   input:
     path(fasta)

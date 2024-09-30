@@ -20,7 +20,7 @@ ______________________________________________________
 --pubdir                     ${params.pubdir}
 -w                           ${workDir}
 --keep_intermediate          ${params.keep_intermediate}
---save_references            ${params.save_references}
+--keep_reference             ${params.keep_reference}
 -c                           ${params.config}
 
 --quality_phred              ${params.quality_phred}
