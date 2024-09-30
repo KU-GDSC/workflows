@@ -13,18 +13,17 @@ workflow RNASEQ_INDICES {
     take:
         fasta           //      file: /path/to/genome.fasta
         gff             //      file: /path/to/genome.gff
+        read_length     //      value: GET_READ_LENGTH.out.read_length
+        read_unique     //      value: 
 
     main:
         ch_fasta = Channel.value(file(fasta))
         ch_gff = Channel.value(file(gff))
 
-        read_length = Channel.value(100)
-        read_unique = Channel.value(2)
-
         RSEM_PREPAREREFERENCE(ch_fasta, ch_gff, read_length, read_unique)
         rsem_index = RSEM_PREPAREREFERENCE.out.index
         rsem_basename= RSEM_PREPAREREFERENCE.out.basename
-        rsem_gtf = ch_gff
+        rsem_gtf = RSEM_PREPAREREFERENCE.out.gtf
         rsem_transcripts = RSEM_PREPAREREFERENCE.out.transcripts
 
         UCSC_GTFTOGENEPRED(RSEM_PREPAREREFERENCE.out.gtf)
@@ -48,5 +47,4 @@ workflow RNASEQ_INDICES {
         rsem_basename
         dict
         kallisto_index
-       
 }

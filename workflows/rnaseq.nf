@@ -2,17 +2,16 @@
 nextflow.enable.dsl=2
 
 // import modules
-include {HELP} from "${projectDir}/etc/help/microbial_rnaseq"
-include {PARAM_LOG} from "${projectDir}/etc/log/microbial_rnaseq"
+include {HELP} from "${projectDir}/etc/help/rnaseq"
+include {PARAM_LOG} from "${projectDir}/etc/log/rnaseq"
 include {CONCATENATE_READS_PE} from "${projectDir}/modules/utility_modules/concatenate_reads_pe"
 include {CONCATENATE_READS_SE} from "${projectDir}/modules/utility_modules/concatenate_reads_se"
 include {GET_LIBRARY_ID} from "${projectDir}/etc/scripts/shared/getLibraryId.nf"
 include {GET_READ_LENGTH} from "${projectDir}/modules/utility_modules/get_read_length"
 include {PARSE_RNASEQ_INDICES} from "${projectDir}/modules/utility_modules/parse_rnaseq_indices"
-include {RNASEQ_INDICES} from "${projectDir}/subworkflows/indices/microbial_rnaseq"
+include {RNASEQ_INDICES} from "${projectDir}/subworkflows/indices/rnaseq"
 include {FASTP} from "${projectDir}/modules/fastp/fastp"
 include {CHECK_STRANDEDNESS} from "${projectDir}/modules/python/python_check_strandedness"
-
 include {FASTQC} from "${projectDir}/modules/fastqc/fastqc"
 include {READ_GROUPS} from "${projectDir}/modules/utility_modules/read_groups"
 include {RSEM_CALCULATE_EXPRESSION} from "${projectDir}/modules/rsem/rsem_calculate_expression"
@@ -61,14 +60,19 @@ if (params.read_type == 'PE'){
     read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
 }
 
-workflow MICROBIAL_RNASEQ {
+workflow RNASEQ {
+
+    // Get read lenghts from FASTQs
+    GET_READ_LENGTH(read_ch)
+    ch_read_lengths = GET_READ_LENGTH.out.read_length.collect{ it[1].toInteger() }.flatten()
+    ch_rsem_read_length_unique = ch_read_lengths.unique().count()
+    ch_rsem_read_length = ch_read_lengths.first()
 
     // Initialize or generate RSEM indices
-
     // If pre-generated indices provided, map to channels
     if (params.rsem_index) {
         rnaseq_index_fh = Channel.value(file("${params.rsem_index}/**"))
-        rnaseq_index_fh_chrlist = Channel.value(file("${params.rsem_index}/**.chrlist")) 
+        rnaseq_index_fh_chrlist = Channel.value(file("${params.rsem_index}/**.chrlist"))
         PARSE_RNASEQ_INDICES(rnaseq_index_fh, rnaseq_index_fh_chrlist)
         rnaseq_indices_dict = PARSE_RNASEQ_INDICES.out.dict
         rnaseq_indices_refFlat = PARSE_RNASEQ_INDICES.out.refFlat
@@ -80,9 +84,9 @@ workflow MICROBIAL_RNASEQ {
         rnaseq_indices_kallisto = PARSE_RNASEQ_INDICES.out.kallisto_index
 
     // Otherwise, if FASTA and GTF provided, generate indices
-    } else if (params.fasta && params.gff) {
+    } else if (params.fasta && params.gtf) {
 
-        RNASEQ_INDICES(params.fasta, params.gff)
+        RNASEQ_INDICES(params.fasta, params.gtf, ch_rsem_read_length, ch_rsem_read_length_unique)
         rnaseq_indices_dict = RNASEQ_INDICES.out.dict
         rnaseq_indices_refFlat = RNASEQ_INDICES.out.refFlat
         rnaseq_indices_rRNA_intervals = RNASEQ_INDICES.out.rRNA_intervals
@@ -93,7 +97,7 @@ workflow MICROBIAL_RNASEQ {
         rnaseq_indices_kallisto = RNASEQ_INDICES.out.kallisto_index
     // If neither, throw error
     } else {
-        error "Must provide either --rsem_index or both --fasta and --gff to generate the RSEM index"
+        error "Must provide either --rsem_index or both --fasta and --gtf to generate the RSEM index"
     }
 
     if (params.concat_lanes){
@@ -106,9 +110,6 @@ workflow MICROBIAL_RNASEQ {
         }
     }
 
-    GET_READ_LENGTH(read_ch)
-    
-    // Generate RSEM indices
     FASTP(read_ch)
     FASTQC(FASTP.out.trimmed_fastq)
     READ_GROUPS(FASTP.out.trimmed_fastq, "picard")
@@ -117,7 +118,6 @@ workflow MICROBIAL_RNASEQ {
 
     rsem_input = FASTP.out.trimmed_fastq.join(GET_READ_LENGTH.out.read_length).join(CHECK_STRANDEDNESS.out.strand_setting)
     RSEM_CALCULATE_EXPRESSION(rsem_input, rnaseq_indices_rsem, rnaseq_indices_basename)
-
 
     // Merge RSEM results across samples
     ch_genes = Channel.empty()
@@ -140,6 +140,7 @@ workflow MICROBIAL_RNASEQ {
     ch_multiqc_files = ch_multiqc_files.mix(CHECK_STRANDEDNESS.out.strandedness_report.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(RSEM_CALCULATE_EXPRESSION.out.rsem_cnt.collect{it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(RSEM_CALCULATE_EXPRESSION.out.star_log.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTRNASEQMETRICS.out.picard_metrics.collect{it[1]}.ifEmpty([]))
 
     MULTIQC (
