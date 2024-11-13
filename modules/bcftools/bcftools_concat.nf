@@ -34,6 +34,8 @@ process BCFTOOLS_CONCAT {
         -f vcf_list.txt \
         --threads ${task.cpus} \
         -Ov \
-        -o ${outprefix}_variants_bcftools_raw.vcf
+        -o ${outprefix}_variants_bcftools_noqd.vcf
+
+    bcftools +fill-tags ${outprefix}_variants_bcftools_noqd.vcf -- -t 'QD:1=QUAL/INFO/DP' > ${outprefix}_variants_bcftools_raw.vcf
     """
 }
