@@ -16,6 +16,8 @@ include {PICARD_COLLECTWGSMETRICS} from "${projectDir}/modules/picard/picard_col
 include {BUNDLE_BAMS} from "${projectDir}/modules/utility_modules/bundle_bams"
 include {BCFTOOLS_MPILEUP_INTERVAL} from "${projectDir}/modules/bcftools/bcftools_mpileup_interval"
 include {BCFTOOLS_CONCAT} from "${projectDir}/modules/bcftools/bcftools_concat"
+include {GATK_INDEXFEATUREFILE} from "${projectDir}/modules/gatk/gatk_indexfeaturefile"
+include {GATK_VARIANTFILTRATION} from "${projectDir}/modules/gatk/gatk_variantfiltration"
 include {GATK_VARIANTSTOTABLE} from "${projectDir}/modules/gatk/gatk_variantstotable"
 include {MULTIQC} from "${projectDir}/modules/multiqc/multiqc"
 
@@ -83,7 +85,11 @@ workflow WGS {
 
   BCFTOOLS_CONCAT(BCFTOOLS_MPILEUP_INTERVAL.out.vcf.collect())
 
-  GATK_VARIANTSTOTABLE(BCFTOOLS_CONCAT.out.vcf)
+  GATK_INDEXFEATUREFILE(BCFTOOLS_CONCAT.out.vcf)
+
+  GATK_VARIANTFILTRATION(BCFTOOLS_CONCAT.out.vcf, GATK_INDEXFEATUREFILE.out.idx, WGS_INDICES.out.fasta_fai, WGS_INDICES.out.dict)
+
+  GATK_VARIANTSTOTABLE(GATK_VARIANTFILTRATION.out.vcf, GATK_VARIANTFILTRATION.out.idx)
 
   ch_multiqc_files = Channel.empty()
   ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
