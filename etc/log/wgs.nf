@@ -27,6 +27,11 @@ ______________________________________________________
 --unqualified_perc           ${params.unqualified_perc}
 
 --fasta                      ${params.fasta}
+--filter_dp                  ${params.filter_dp}
+--filter_very_low_qual       ${params.filter_very_low_qual}
+--filter_low_qual            ${params.filter_low_qual}
+--filter_qd                  ${params.filter_qd}
+--filter_fs                  ${params.filter_fs}
 
 Project Directory: ${projectDir}
 
