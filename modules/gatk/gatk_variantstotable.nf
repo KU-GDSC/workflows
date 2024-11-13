@@ -12,6 +12,7 @@ process GATK_VARIANTSTOTABLE {
     
     input:
         path(vcf)
+        path(idx)
     output:
         path("*_site_table.tsv"), emit: sites
         path("*_genotype_table.tsv"), emit: genotypes
@@ -30,6 +31,8 @@ process GATK_VARIANTSTOTABLE {
             -F DP \
             -F AD \
             -F MQ \
+            -F FILTER \
+            --show-filtered \
             --output `basename ${vcf} .vcf`_site_table.tsv
     
     gatk --java-options '-Xmx${my_mem}G -Djava.io.tmpdir=${params.tmpdir}' \
@@ -37,10 +40,12 @@ process GATK_VARIANTSTOTABLE {
             --variant ${vcf} \
             -F CHROM \
             -F POS \
+            -F FILTER \
             -GF GT \
             -GF DP \
             -GF AD \
             -GF PL \
+            --show-filtered \
             --output `basename ${vcf} .vcf`_genotype_table.tsv
     """
 }
