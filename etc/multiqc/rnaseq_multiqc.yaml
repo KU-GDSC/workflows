@@ -6,6 +6,7 @@ export_plots: true
 module_order:
   - fastp
   - fastqc
+  - star
   - rsem
   - picard
 
@@ -15,17 +16,22 @@ table_columns_visible:
     percent_gc: False
     total_sequences: False
 
-fn_clean_exts:
+extra_fn_clean_exts:
   - ".gz"
   - ".fastq"
   - ".cnt"
-  - "_sortsam.bam"
+  - "_sortsam"
   - ".trimmed.R1"
   - ".trimmed.R2"
   - "_L001"
   - "_L001_sortsam"
   - "_R1_"
   - "_R1"
+  - "_strandedness"
+  - "_fastp"
+  - ".STAR"
+  - "_1"
+  - "_2"
 
 remove_sections:
   - fastqc_per_base_sequence_content
