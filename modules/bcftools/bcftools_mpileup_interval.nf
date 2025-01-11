@@ -15,21 +15,21 @@ process BCFTOOLS_MPILEUP_INTERVAL {
         path "${interval}.vcf", emit: vcf
 
     script:
-    
+    variants = params.variants_only ? "-v" : ''
+    indels = params.skip_indels ? "-I" : '' 
     """
     ls ${bam_dir}/*.bam > bam_list.txt
     
     bcftools mpileup \
-        -Ou \
-        -I \
+        -Ou ${indels} \
         -a FORMAT/DP,FORMAT/AD,FORMAT/ADF,FORMAT/ADR,INFO/AD,INFO/ADF,INFO/AD \
-        --max-depth=100 \
+        --max-depth=${params.mpileup_depth} \
         -r ${interval} \
         -f ${fasta} \
         -b bam_list.txt | \
     bcftools call \
-        -v \
-        -m \
+        --ploidy ${params.ploidy} \
+        -m ${variants} \
         -O v \
         -o ${interval}.vcf
     """
