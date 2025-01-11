@@ -32,6 +32,12 @@ ______________________________________________________
 --filter_low_qual            ${params.filter_low_qual}
 --filter_qd                  ${params.filter_qd}
 --filter_fs                  ${params.filter_fs}
+--mismatch_penalty           ${params.mismatch_penalty}
+--bwa_min_score              ${params.bwa_min_score}
+--ploidy                     ${params.ploidy}
+--mpileup_depth              ${params.mpileup_depth}
+--skip_indels                ${params.skip_indels}
+--variants_only              ${params.variants_only}
 
 Project Directory: ${projectDir}
 
