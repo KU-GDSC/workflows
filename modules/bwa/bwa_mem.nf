@@ -20,7 +20,8 @@ process BWA_MEM {
           inputfq="${fq_reads[0]} ${fq_reads[1]}"
       }
       
+      score = params.bwa_min_score ? "-T ${params.bwa_min_score}" : ''
       """
-      bwa mem -K 100000000 -R \$(cat $read_group) -t ${task.cpus} -M index ${fq_reads} > ${sampleID}.sam
+      bwa mem -R \$(cat $read_group) -t ${task.cpus} ${params.mismatch_penalty} ${score} -M index ${fq_reads} > ${sampleID}.sam
       """
 }
