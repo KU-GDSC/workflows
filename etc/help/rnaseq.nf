@@ -4,7 +4,7 @@ Parameter | Default | Description
 
 --fasta | null | The path to the reference genome FASTA. Required with a GFF for mapping unless pre-generated indices are provided with --rsem_index.
 
---gff | null | The path to the reference genome annotation in GFF3 format. Required with a FASTA for mapping until pre-generated indices are provided with --rsem_index.
+--gtf | null | The path to the reference genome annotation in GTF format. Required with a FASTA for mapping until pre-generated indices are provided with --rsem_index.
 
 --rsem_index | null | The path to a directory containing pre-generated RSEM indices prepared by this workflow. An error will occur if any files are missing.
 
