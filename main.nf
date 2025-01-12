@@ -7,6 +7,11 @@ if (params.workflow == "microbial_rnaseq"){
   include {MICROBIAL_RNASEQ} from './workflows/microbial_rnaseq'
 }
 
+else if (params.workflow == "wgs"){
+  include {WGS} from './workflows/wgs'
+
+}
+
 else if (params.workflow == "rnaseq") {
   include {RNASEQ} from './workflows/rnaseq'
 }
@@ -21,7 +26,13 @@ workflow{
   if (params.workflow == "microbial_rnaseq") {
     MICROBIAL_RNASEQ()
     }
+
+  else if (params.workflow == "wgs") {
+    WGS()
+  }
+
   if (params.workflow == "rnaseq") {
     RNASEQ()
+
   }
 }
