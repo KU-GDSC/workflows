@@ -1,0 +1,15 @@
+image: atlassian/default-image:3
+
+pipelines:
+  # Automated pipeline for syncing Bitbucket repository with its GitHub based on tags, ensuring real-time updates across platforms for releases
+  tags:
+    '*':
+      - step:
+          name: Sync GitHub On New Tag
+          image: alpine/git:latest
+          clone:
+            enabled: false
+          script:
+            - git clone --bare git@bitbucket.org:ku-gdsc/workflows.git test_sync
+            - cd test_sync
+            - git push git@github.com:ku-gdsc/workflows.git main:main --follow-tags
