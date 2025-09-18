@@ -2,7 +2,7 @@ process RSEM_CALCULATE_EXPRESSION {
   tag "$sampleID"
 
   cpus 12
-  memory 70.GB
+  memory 128.GB
   time 24.h
 
   errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
@@ -68,7 +68,7 @@ process RSEM_CALCULATE_EXPRESSION {
         outbam="--star-output-genome-bam --sort-bam-by-coordinate"
         seed_length=""
         samtools_mem = (int)(task.memory.giga / task.cpus)
-        sort_command="samtools sort -@ 6 -m 5G -o ${sampleID}.STAR.genome.sorted.bam ${sampleID}.STAR.genome.bam"
+        sort_command="samtools sort -@ 6 -m 16G -o ${sampleID}.STAR.genome.sorted.bam ${sampleID}.STAR.genome.bam"
         index_command="samtools index ${sampleID}.STAR.genome.sorted.bam"
         intermediate="--keep-intermediate-files"
         star_log="cp ${sampleID}.temp/*.final.out ./${sampleID}.STAR.Log.final.out && rm -r ${sampleID}.temp"
