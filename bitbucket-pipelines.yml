@@ -10,6 +10,7 @@ pipelines:
           clone:
             depth: full
           script:
-            - git clone --bare git@bitbucket.org:ku-gdsc/workflows.git workflows
-            - cd workflows
+            - if [ -d "gdsc_workflows" ]; then rm -rf gdsc_workflows; fi
+            - git clone --bare git@bitbucket.org:ku-gdsc/workflows.git gdsc_workflows
+            - cd gdsc_workflows
             - git push git@github.com:ku-gdsc/workflows.git main:main --follow-tags
