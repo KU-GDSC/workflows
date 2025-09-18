@@ -1,5 +1,31 @@
 # Release Notes
 
+## Release v0.1.1
+
+### Workflows Added:
+
+N/A
+
+### Subworkflows Added:
+
+N/A
+
+### Modules Added:
+
+N/A
+
+### Workflows Changes:
+
+N/A
+
+### Subworkflows Changed:
+
+N/A
+
+### Modules Changed:
+
+1. rsem/rsem_calculate_expression.nf
+
 ## Release v0.1.0
 
 ### Workflows Added:
