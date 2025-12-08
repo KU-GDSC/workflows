@@ -87,9 +87,14 @@ workflow WGS {
 
   GATK_INDEXFEATUREFILE(BCFTOOLS_CONCAT.out.vcf)
 
-  GATK_VARIANTFILTRATION(BCFTOOLS_CONCAT.out.vcf, GATK_INDEXFEATUREFILE.out.idx, WGS_INDICES.out.fasta_fai, WGS_INDICES.out.dict)
+  if (params.filter_vcf) {
+      GATK_VARIANTFILTRATION(BCFTOOLS_CONCAT.out.vcf, GATK_INDEXFEATUREFILE.out.idx, WGS_INDICES.out.fasta_fai, WGS_INDICES.out.dict)
 
-  GATK_VARIANTSTOTABLE(GATK_VARIANTFILTRATION.out.vcf, GATK_VARIANTFILTRATION.out.idx)
+      GATK_VARIANTSTOTABLE(GATK_VARIANTFILTRATION.out.vcf, GATK_VARIANTFILTRATION.out.idx)
+      }
+  else {
+      GATK_VARIANTSTOTABLE(BCFTOOLS_CONCAT.out.vcf, GATK_INDEXFEATUREFILE.out.idx)
+  }
 
   ch_multiqc_files = Channel.empty()
   ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))

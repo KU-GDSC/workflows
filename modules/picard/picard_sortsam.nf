@@ -7,7 +7,7 @@ process PICARD_SORTSAM {
 
   errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
 
-  container "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
+  container "broadinstitute/gatk:4.2.2.0"
 
   publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID+'/bam' : 'picard' }", pattern: "*_sortsam.bam", mode:'copy', enabled: params.keep_intermediate && params.workflow == 'rnaseq' || params.workflow == 'microbial_rnaseq'
 
@@ -23,7 +23,7 @@ process PICARD_SORTSAM {
     my_mem =  my_mem[0..-4]
 
     """
-    picard -Xmx${my_mem}G -Djava.io.tmpdir=`pwd`/tmp SortSam \
+    gatk --java-options "-Xmx${my_mem}G -Djava.io.tmpdir=`pwd`/tmp" SortSam \
       SO=coordinate \
       INPUT=${sam} \
       OUTPUT=${sampleID}_sortsam.bam  \
