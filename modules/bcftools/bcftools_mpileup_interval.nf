@@ -2,8 +2,8 @@ process BCFTOOLS_MPILEUP_INTERVAL {
     tag "${interval}"
 
     cpus = 1
-    memory = 60.GB
-    time = '6:00:00'
+    memory = 120.GB
+    time = '48:00:00'
     errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
 
     container 'quay.io/biocontainers/bcftools:1.15--h0ea216a_2'

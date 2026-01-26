@@ -8,6 +8,8 @@ process GATK_VARIANTSTOTABLE {
 
     publishDir "${params.pubdir}/", pattern: "*_table.tsv", mode:'copy'
 
+    publishDir "${params.pubdir}/", pattern: "*.vcf", mode:'copy', enabled: !params.filter_vcf
+    
     container 'broadinstitute/gatk:4.2.2.0'
     
     input:
