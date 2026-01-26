@@ -1,5 +1,35 @@
 # Release Notes
 
+## Release v0.1.2
+
+Modified behavior of the RNA-seq --strandedness parameter to skip strand detection
+if --strandedness is set to 'non_stranded', 'forward_stranded', or 'reverse_stranded'
+and just accept those values instead
+
+### Workflows Added:
+
+N/A
+
+### Subworkflows Added:
+
+N/A
+
+### Modules Added:
+
+N/A
+
+### Workflows Changes:
+
+N/A
+
+### Subworkflows Changed:
+
+N/A
+
+### Modules Changed:
+
+1. modules/python/python_check_strandedness.nf
+
 ## Release v0.1.1
 
 ### Workflows Added:
