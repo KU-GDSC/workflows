@@ -22,6 +22,9 @@ process CHECK_STRANDEDNESS {
 
     script:
         paired = params.read_type == 'PE' ? "-r2 ${reads[1]}" : ''
+        if (params.strandedness != "forward_stranded" && params.strandedness != "reverse_stranded" && params.strandedness != "non_stranded") {
+            println "Warning: parameter '--strandedness " + params.strandedness + "' not recognized as one of 'reverse_stranded', 'forward_stranded', or 'non_stranded', so performing strand detection"
+        }
 
         """
         if [ ${params.strandedness} == "reverse_stranded" ] || [ ${params.strandedness} == "forward_stranded" ] || [ ${params.strandedness} == "non_stranded" ]; then
