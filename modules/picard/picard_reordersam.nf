@@ -24,7 +24,7 @@ process PICARD_REORDERSAM {
     my_mem =  my_mem[0..-4]
 
   """
-  gatk ---java-options "-Xmx${my_mem}G" ReorderSam \
+  gatk --java-options "-Xmx${my_mem}G" ReorderSam \
     INPUT=${bam} \
     OUTPUT=${sampleID}_genome_bam_with_read_group_reorder.bam \
     SEQUENCE_DICTIONARY=${picard_dict} \
