@@ -1,5 +1,33 @@
 # Release Notes
 
+## Release v0.1.3
+
+Minor release to correct a typo in a container URL
+
+### Workflows Added:
+
+N/A
+
+### Subworkflows Added:
+
+N/A
+
+### Modules Added:
+
+N/A
+
+### Workflows Changes:
+
+N/A
+
+### Subworkflows Changed:
+
+N/A
+
+### Modules Changed:
+
+1. modules/utility_modules/read_groups.nf
+
 ## Release v0.1.2
 
 Modified behavior of the RNA-seq --strandedness parameter to skip strand detection
