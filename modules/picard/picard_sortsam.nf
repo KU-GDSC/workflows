@@ -23,7 +23,7 @@ process PICARD_SORTSAM {
     my_mem =  my_mem[0..-4]
 
     """
-    gatk --java-options "-Xmx${my_mem}G -Djava.io.tmpdir=`pwd`/tmp" SortSam \
+    gatk --java-options "-Xmx${my_mem}G -XX:+UnlockDiagnosticVMOptions -XX:-UseCRC32Intrinsics -Djava.io.tmpdir=`pwd`/tmp" SortSam \
       SO=coordinate \
       INPUT=${sam} \
       OUTPUT=${sampleID}_sortsam.bam  \

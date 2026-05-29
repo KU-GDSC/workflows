@@ -2,8 +2,9 @@ process PICARD_COLLECTWGSMETRICS {
   tag "$sampleID"
 
   cpus = 1
-  memory = 16.GB
-  time = '3:00:00'
+  memory { bam.size() < 60.GB ? 24.GB : 48.GB }
+  time { bam.size() < 60.GB ? '03:00:00' : '12:00:00' }
+
   errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
 
   container 'broadinstitute/gatk:4.2.2.0'
@@ -21,7 +22,7 @@ process PICARD_COLLECTWGSMETRICS {
   my_mem =  my_mem[0..-4]
 
   """
-  gatk --java-options "-Xmx${my_mem}G" CollectWgsMetrics \
+  gatk --java-options "-Xmx${my_mem}G -XX:+UnlockDiagnosticVMOptions -XX:-UseCRC32Intrinsics" CollectWgsMetrics \
   --INPUT ${bam} \
   --OUTPUT ${sampleID}_CollectWgsMetrics.txt \
   --REFERENCE_SEQUENCE ${params.fasta} \
