@@ -1,5 +1,35 @@
 # Release Notes
 
+## Release v0.1.4
+
+Minor release to increase memory for Picard SortSam to address
+Out of Memory error in WGS pipeline runs
+
+### Workflows Added:
+
+N/A
+
+### Subworkflows Added:
+
+N/A
+
+### Modules Added:
+
+N/A
+
+### Workflows Changes:
+
+N/A
+
+### Subworkflows Changed:
+
+N/A
+
+### Modules Changed:
+
+1. modules/picard/picard_sortsam.nf
+
+
 ## Release v0.1.3
 
 Minor release to correct a typo in a container URL
