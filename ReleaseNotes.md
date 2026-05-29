@@ -1,5 +1,39 @@
 # Release Notes
 
+## Release v0.1.5
+
+Another minor release to address issues with GATK 4.2.2.0 container
+core dumps in WGS pipeline with error code 245. Here I add the
+java flag -UseCRC32Intrinsics, which based on testing has helped
+address these sporadic core dumps.
+
+### Workflows Added:
+
+N/A
+
+### Subworkflows Added:
+
+N/A
+
+### Modules Added:
+
+N/A
+
+### Workflows Changes:
+
+N/A
+
+### Subworkflows Changed:
+
+N/A
+
+### Modules Changed:
+
+1. modules/picard/picard_collectalignmentsummarymetrics.nf
+1. modules/picard/picard_collectwgsmetrics.nf
+1. modules/picard/picard_markduplicates.nf
+1. modules/picard/picard_sortsam.nf
+
 ## Release v0.1.4
 
 Minor release to increase memory for Picard SortSam to address

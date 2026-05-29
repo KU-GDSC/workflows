@@ -23,7 +23,7 @@ process PICARD_MARKDUPLICATES {
         my_mem =  my_mem[0..-4]
 
         """
-        gatk --java-options "-Xmx${my_mem}G -Xms${my_mem}G" MarkDuplicates \
+        gatk --java-options "-Xmx${my_mem}G -Xms${my_mem}G -XX:+UnlockDiagnosticVMOptions -XX:-UseCRC32Intrinsics" MarkDuplicates \
         I=${bam[0]} \
         O=${sampleID}_dedup.bam \
         M=${sampleID}_dup_metrics.txt \
