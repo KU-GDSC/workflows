@@ -1,5 +1,36 @@
 # Release Notes
 
+## Release v0.1.6
+
+Minor release to address issues with WGS workflows failing to
+complete with very large input data. Increased resource requests for
+FASTQ filtering and mapping steps
+
+### Workflows Added:
+
+N/A
+
+### Subworkflows Added:
+
+N/A
+
+### Modules Added:
+
+N/A
+
+### Workflows Changes:
+
+N/A
+
+### Subworkflows Changed:
+
+N/A
+
+### Modules Changed:
+
+1. modules/bwa/bwa_mem.nf
+1. modules/fastp/fastp.nf
+
 ## Release v0.1.5
 
 Another minor release to address issues with GATK 4.2.2.0 container
