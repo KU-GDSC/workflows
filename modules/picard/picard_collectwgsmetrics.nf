@@ -1,7 +1,7 @@
 process PICARD_COLLECTWGSMETRICS {
   tag "$sampleID"
 
-  cpus = 1
+  cpus 1
   memory { bam.size() < 60.GB ? 24.GB : 48.GB }
   time { bam.size() < 60.GB ? '03:00:00' : '12:00:00' }
 
