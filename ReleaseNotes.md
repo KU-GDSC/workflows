@@ -1,5 +1,39 @@
 # Release Notes
 
+## Release v0.1.7
+
+Minor release to address issues Nextflow v26. This version
+sets "strict" syntax parsing by default, which breaks
+many previously accepted design patterns. A subsequent 
+major release of these pipelines will be necessary to 
+make them compatible with Nextflow v26. In the meantime, 
+users should use a version of Nextflow between 23.04.3
+and 25.10.4
+
+### Workflows Added:
+
+N/A
+
+### Subworkflows Added:
+
+N/A
+
+### Modules Added:
+
+N/A
+
+### Workflows Changes:
+
+N/A
+
+### Subworkflows Changed:
+
+N/A
+
+### Modules Changed:
+
+N/A
+
 ## Release v0.1.6
 
 Minor release to address issues with WGS workflows failing to
