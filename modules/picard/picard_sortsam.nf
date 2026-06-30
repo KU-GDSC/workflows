@@ -9,7 +9,7 @@ process PICARD_SORTSAM {
 
   container "broadinstitute/gatk:4.2.2.0"
 
-  publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID+'/bam' : 'picard' }", pattern: "*_sortsam.bam", mode:'copy', enabled: params.keep_intermediate && params.workflow == 'rnaseq' || params.workflow == 'microbial_rnaseq'
+  publishDir {"${params.pubdir}/${ params.organize_by=='sample' ? sampleID+'/bam' : 'picard' }"}, pattern: "*_sortsam.bam", mode:'copy', enabled: params.keep_intermediate && params.workflow == 'rnaseq' || params.workflow == 'microbial_rnaseq'
 
   input:
     tuple val(sampleID), file(sam)

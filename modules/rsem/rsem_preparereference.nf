@@ -84,6 +84,6 @@ process RSEM_PREPAREREFERENCE {
         error("Multiple read lengths detected in FASTQ data and STAR indicies requested. STAR uses read length for index generation, so either separate data into different read length groups or rerun the workflow with 'rsem_aligner bowtie2'")
     }
     else {
-        error("The workflow " $params.workflow " or the aligner " $params.rsem_aligner " is not currently supported")
+        error("The workflow ${params.workflow} or the aligner ${params.rsem_aligner} is not currently supported")
         }
 }

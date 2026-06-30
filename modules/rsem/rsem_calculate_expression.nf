@@ -9,10 +9,10 @@ process RSEM_CALCULATE_EXPRESSION {
 
   container "quay.io/jaxcompsci/rsem_bowtie2_star:0.1.0"
 
-  publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID+'/stats' : 'rsem' }", pattern: "*stats", mode:'copy', enabled: params.rsem_aligner == "bowtie2"
-  publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID : 'rsem' }", pattern: "*results*", mode:'copy'
-  publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID+'/bam' : 'rsem' }", pattern: "*genome.sorted.ba*", mode:'copy'
-  publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID+'/bam' : 'rsem' }", pattern: "*transcript.sorted.ba*", mode:'copy'
+  publishDir {"${params.pubdir}/${ params.organize_by=='sample' ? sampleID+'/stats' : 'rsem' }"}, pattern: "*stats", mode:'copy', enabled: params.rsem_aligner == "bowtie2"
+  publishDir {"${params.pubdir}/${ params.organize_by=='sample' ? sampleID : 'rsem' }"}, pattern: "*results*", mode:'copy'
+  publishDir {"${params.pubdir}/${ params.organize_by=='sample' ? sampleID+'/bam' : 'rsem' }"}, pattern: "*genome.sorted.ba*", mode:'copy'
+  publishDir {"${params.pubdir}/${ params.organize_by=='sample' ? sampleID+'/bam' : 'rsem' }"}, pattern: "*transcript.sorted.ba*", mode:'copy'
 
   input:
     tuple val(sampleID), path(reads), val(read_length), val(strand_setting)
@@ -67,14 +67,13 @@ process RSEM_CALCULATE_EXPRESSION {
     if (params.rsem_aligner == "star") {
         outbam="--star-output-genome-bam --sort-bam-by-coordinate"
         seed_length=""
-        samtools_mem = (int)(task.memory.giga / task.cpus)
+        samtools_mem = (task.memory.giga / task.cpus).toInteger()
         sort_command="samtools sort -@ 6 -m 16G -o ${sampleID}.STAR.genome.sorted.bam ${sampleID}.STAR.genome.bam"
         index_command="samtools index ${sampleID}.STAR.genome.sorted.bam"
         intermediate="--keep-intermediate-files"
         star_log="cp ${sampleID}.temp/*.final.out ./${sampleID}.STAR.Log.final.out && rm -r ${sampleID}.temp"
     }
 
-    read_length = read_length.toInteger()
     """
     rsem-calculate-expression -p $task.cpus \
         ${prob} \

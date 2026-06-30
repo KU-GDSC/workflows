@@ -73,6 +73,6 @@ process PARSE_RNASEQ_INDICES {
       mv transcriptInfo.tab rsem_${params.rsem_aligner}/
       """
   } else {
-    error("The workflow " ${params.workflow} " or the aligner " ${params.rsem_aligner} " is not currently supported")
+    error("The workflow ${params.workflow} or the aligner ${params.rsem_aligner} is not currently supported")
   }
 }

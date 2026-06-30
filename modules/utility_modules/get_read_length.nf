@@ -13,7 +13,7 @@ process GET_READ_LENGTH {
   tuple val(sampleID), path(reads)
 
   output:
-  tuple val(sampleID), env(READ_LENGTH), emit: read_length
+  tuple val(sampleID), env('READ_LENGTH'), emit: read_length
 
   script:
   """
