@@ -2,26 +2,27 @@
 nextflow.enable.dsl=2
 
 // import modules
-include {HELP} from "${projectDir}/etc/help/rnaseq"
-include {PARAM_LOG} from "${projectDir}/etc/log/rnaseq"
-include {CONCATENATE_READS_PE} from "${projectDir}/modules/utility_modules/concatenate_reads_pe"
-include {CONCATENATE_READS_SE} from "${projectDir}/modules/utility_modules/concatenate_reads_se"
-include {GET_LIBRARY_ID} from "${projectDir}/etc/scripts/shared/getLibraryId.nf"
-include {GET_READ_LENGTH} from "${projectDir}/modules/utility_modules/get_read_length"
-include {PARSE_RNASEQ_INDICES} from "${projectDir}/modules/utility_modules/parse_rnaseq_indices"
-include {RNASEQ_INDICES} from "${projectDir}/subworkflows/indices/rnaseq"
-include {FASTP} from "${projectDir}/modules/fastp/fastp"
-include {CHECK_STRANDEDNESS} from "${projectDir}/modules/python/python_check_strandedness"
-include {FASTQC} from "${projectDir}/modules/fastqc/fastqc"
-include {READ_GROUPS} from "${projectDir}/modules/utility_modules/read_groups"
-include {RSEM_CALCULATE_EXPRESSION} from "${projectDir}/modules/rsem/rsem_calculate_expression"
-include {MERGE_RSEM_COUNTS} from "${projectDir}/modules/utility_modules/merge_rsem_counts"
-include {PICARD_ADDORREPLACEREADGROUPS} from "${projectDir}/modules/picard/picard_addorreplacereadgroups"
-include {PICARD_REORDERSAM} from "${projectDir}/modules/picard/picard_reordersam"
-include {PICARD_SORTSAM} from "${projectDir}/modules/picard/picard_sortsam"
-include {PICARD_COLLECTRNASEQMETRICS} from "${projectDir}/modules/picard/picard_collectrnaseqmetrics"
-include {MULTIQC} from "${projectDir}/modules/multiqc/multiqc"
+include {HELP} from '../etc/help/rnaseq'
+include {PARAM_LOG} from '../etc/log/rnaseq'
+include {CONCATENATE_READS_PE} from '../modules/utility_modules/concatenate_reads_pe'
+include {CONCATENATE_READS_SE} from '../modules/utility_modules/concatenate_reads_se'
+include {GET_LIBRARY_ID} from '../etc/scripts/shared/getLibraryId.nf'
+include {GET_READ_LENGTH} from '../modules/utility_modules/get_read_length'
+include {PARSE_RNASEQ_INDICES} from '../modules/utility_modules/parse_rnaseq_indices'
+include {RNASEQ_INDICES} from '../subworkflows/indices/rnaseq'
+include {FASTP} from '../modules/fastp/fastp'
+include {CHECK_STRANDEDNESS} from '../modules/python/python_check_strandedness'
+include {FASTQC} from '../modules/fastqc/fastqc'
+include {READ_GROUPS} from '../modules/utility_modules/read_groups'
+include {RSEM_CALCULATE_EXPRESSION} from '../modules/rsem/rsem_calculate_expression'
+include {MERGE_RSEM_COUNTS} from '../modules/utility_modules/merge_rsem_counts'
+include {PICARD_ADDORREPLACEREADGROUPS} from '../modules/picard/picard_addorreplacereadgroups'
+include {PICARD_REORDERSAM} from '../modules/picard/picard_reordersam'
+include {PICARD_SORTSAM} from '../modules/picard/picard_sortsam'
+include {PICARD_COLLECTRNASEQMETRICS} from '../modules/picard/picard_collectrnaseqmetrics'
+include {MULTIQC} from '../modules/multiqc/multiqc'
 
+workflow RNASEQ {
 // help if needed
 if (params.help){
     HELP()
@@ -59,9 +60,6 @@ if (params.read_type == 'PE'){
     // if channel is empty give error message and exit
     read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
 }
-
-workflow RNASEQ {
-
     // Get read lenghts from FASTQs
     GET_READ_LENGTH(read_ch)
     ch_read_lengths = GET_READ_LENGTH.out.read_length.collect{ it[1].toInteger() }.flatten()
