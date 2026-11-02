@@ -24,7 +24,8 @@ process GATK_VARIANTSTOTABLE {
     my_mem =  my_mem[0..-4]
 
     """
-    gatk --java-options '-Xmx${my_mem}G -Djava.io.tmpdir=${params.tmpdir}' \
+    mkdir -p tmp
+    gatk --java-options "-Xmx${my_mem}G -Djava.io.tmpdir=`pwd`/tmp" \
         VariantsToTable \
             --variant ${vcf} \
             -F CHROM \
@@ -37,7 +38,7 @@ process GATK_VARIANTSTOTABLE {
             --show-filtered \
             --output `basename ${vcf} .vcf`_site_table.tsv
     
-    gatk --java-options '-Xmx${my_mem}G -Djava.io.tmpdir=${params.tmpdir}' \
+    gatk --java-options "-Xmx${my_mem}G -Djava.io.tmpdir=`pwd`/tmp" \
         VariantsToTable \
             --variant ${vcf} \
             -F CHROM \
