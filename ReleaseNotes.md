@@ -1,5 +1,43 @@
 # Release Notes
 
+## Release v0.1.8
+
+Minor release to address a few bugs related to single-end FASTQ
+input and/or uncompressed FASTQ input.
+
+Additionally, harmonized WGS config with other workflows to use
+compressed FASTQ as default input type
+(can still be modified to uncompressed via --extension).
+
+
+### Workflows Added:
+
+N/A
+
+### Subworkflows Added:
+
+N/A
+
+### Modules Added:
+
+N/A
+
+### Workflows Changes:
+
+N/A
+
+### Subworkflows Changed:
+
+N/A
+
+### Modules Changed:
+
+1. modules/bwa/bwa_mem.nf
+1. modules/fastp/fastp/nf
+1. modules/gatk/gatk_variantstotable.nf
+1. modules/utility_modules/get_contig_names.nf
+
+
 ## Release v0.1.7
 
 Minor release to address issues Nextflow v26. This version
