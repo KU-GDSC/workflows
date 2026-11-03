@@ -1,0 +1,69 @@
+nextflow_workflow {
+    name "Test Microbial RNA-seq"
+    script "workflows/microbial_rnaseq.nf"
+    workflow "MICROBIAL_RNASEQ"
+
+    test("E. faecaelis simulated 100k -- bowtie2 -- skip strand -- PE -- compressed input") {
+        when {
+            params {
+                fasta = "/kuhpc/work/sjmac/observer/references/e_faecalis/ncbi_dataset/data/GCF_000007785.1/GCF_000007785.1_ASM778v1_genomic.fna"
+                gff = "/kuhpc/work/sjmac/observer/references/e_faecalis/ncbi_dataset/data/GCF_000007785.1/genomic.gff"
+                sample_folder = "/kuhpc/work/sjmac/observer/simulated_data/rnaseq/e_faecalis/100k/"
+                read_type = "PE"
+                strandedness = "non_stranded"
+                pubdir = "tests/efae_bowtie2_skip_PE_zip"
+                pipeline = "microbial_rnaseq"
+            }
+        }
+
+        then {
+            assertAll (
+                { assert snapshot(workflow.out.merged_genes).match("bowtie_skip_pe_zip") },
+                { assert workflow.success }
+                )
+            }
+    }
+
+    test("E. faecaelis simulated 100k -- bowtie2 -- skip strand -- SE -- compressed input") {
+        when {
+            params {
+                fasta = "/kuhpc/work/sjmac/observer/references/e_faecalis/ncbi_dataset/data/GCF_000007785.1/GCF_000007785.1_ASM778v1_genomic.fna"
+                gff = "/kuhpc/work/sjmac/observer/references/e_faecalis/ncbi_dataset/data/GCF_000007785.1/genomic.gff"
+                sample_folder = "/kuhpc/work/sjmac/observer/simulated_data/rnaseq/e_faecalis/100k/SE"
+                read_type = "SE"
+                strandedness = "non_stranded"
+                pubdir = "tests/efae_bowtie2_skip_SE_zip"
+                pipeline = "microbial_rnaseq"
+            }
+        }
+
+        then {
+            assertAll (
+                { assert snapshot(workflow.out.merged_genes).match("bowtie_skip_se_zip") },
+                { assert workflow.success }
+                )
+            }
+    }
+
+    test("E. faecaelis simulated 100k -- bowtie2 -- skip strand -- PE -- uncompressed input") {
+        when {
+            params {
+                fasta = "/kuhpc/work/sjmac/observer/references/e_faecalis/ncbi_dataset/data/GCF_000007785.1/GCF_000007785.1_ASM778v1_genomic.fna"
+                gff = "/kuhpc/work/sjmac/observer/references/e_faecalis/ncbi_dataset/data/GCF_000007785.1/genomic.gff"
+                sample_folder = "/kuhpc/work/sjmac/observer/simulated_data/rnaseq/e_faecalis/100k/"
+                read_type = "PE"
+                extension = ".fastq"
+                strandedness = "non_stranded"
+                pubdir = "tests/efae_bowtie2_skip_PE_unzip"
+                pipeline = "microbial_rnaseq"
+            }
+        }
+
+        then {
+            assertAll (
+                { assert snapshot(workflow.out.merged_genes).match("bowtie_skip_pe_unzip") },
+                { assert workflow.success }
+                )
+            }
+    }
+}
