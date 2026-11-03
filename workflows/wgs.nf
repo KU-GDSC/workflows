@@ -47,64 +47,67 @@ ch_reads.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder
 workflow WGS {
 
   // STEP 0: Prepare references as necessary
+  main: 
+      WGS_INDICES(params.fasta)
+      
+      FASTP(ch_reads)
 
-  WGS_INDICES(params.fasta)
-  
-  FASTP(ch_reads)
+      FASTQC(FASTP.out.trimmed_fastq)
 
-  FASTQC(FASTP.out.trimmed_fastq)
+      READ_GROUPS(FASTP.out.trimmed_fastq, 'GATK')
 
-  READ_GROUPS(FASTP.out.trimmed_fastq, 'GATK')
+      bwa_input = FASTP.out.trimmed_fastq.join(READ_GROUPS.out.read_groups)
+                                         .combine(WGS_INDICES.out.bwa_index)
+      
+      BWA_MEM(bwa_input)
 
-  bwa_input = FASTP.out.trimmed_fastq.join(READ_GROUPS.out.read_groups)
-                                     .combine(WGS_INDICES.out.bwa_index)
-  
-  BWA_MEM(bwa_input)
+      PICARD_SORTSAM(BWA_MEM.out.sam)
 
-  PICARD_SORTSAM(BWA_MEM.out.sam)
+      PICARD_MARKDUPLICATES(PICARD_SORTSAM.out.bam)
 
-  PICARD_MARKDUPLICATES(PICARD_SORTSAM.out.bam)
+      PICARD_COLLECTALIGNMENTSUMMARYMETRICS(PICARD_MARKDUPLICATES.out.dedup_bam)
 
-  PICARD_COLLECTALIGNMENTSUMMARYMETRICS(PICARD_MARKDUPLICATES.out.dedup_bam)
+      PICARD_COLLECTWGSMETRICS(PICARD_MARKDUPLICATES.out.dedup_bam)
+      
+      ch_bams = Channel.empty()
+      ch_bams = ch_bams.mix(PICARD_MARKDUPLICATES.out.dedup_bam.collect{it[1]}.ifEmpty([]))
+      ch_bais = Channel.empty()
+      ch_bais = ch_bais.mix(PICARD_MARKDUPLICATES.out.dedup_bai.collect{it[1]}.ifEmpty([]))
 
-  PICARD_COLLECTWGSMETRICS(PICARD_MARKDUPLICATES.out.dedup_bam)
-  
-  ch_bams = Channel.empty()
-  ch_bams = ch_bams.mix(PICARD_MARKDUPLICATES.out.dedup_bam.collect{it[1]}.ifEmpty([]))
-  ch_bais = Channel.empty()
-  ch_bais = ch_bais.mix(PICARD_MARKDUPLICATES.out.dedup_bai.collect{it[1]}.ifEmpty([]))
+      BUNDLE_BAMS(ch_bams, ch_bais)
 
-  BUNDLE_BAMS(ch_bams, ch_bais)
+      to_genotype = Channel.empty()
+      to_genotype = BUNDLE_BAMS.out.bam_dir
+                        .combine(WGS_INDICES.out.contig_list)
+                        .combine(WGS_INDICES.out.fasta_fai)
 
-  to_genotype = Channel.empty()
-  to_genotype = BUNDLE_BAMS.out.bam_dir
-                    .combine(WGS_INDICES.out.contig_list)
-                    .combine(WGS_INDICES.out.fasta_fai)
+      BCFTOOLS_MPILEUP_INTERVAL(to_genotype)
 
-  BCFTOOLS_MPILEUP_INTERVAL(to_genotype)
+      BCFTOOLS_CONCAT(BCFTOOLS_MPILEUP_INTERVAL.out.vcf.collect())
 
-  BCFTOOLS_CONCAT(BCFTOOLS_MPILEUP_INTERVAL.out.vcf.collect())
+      GATK_INDEXFEATUREFILE(BCFTOOLS_CONCAT.out.vcf)
 
-  GATK_INDEXFEATUREFILE(BCFTOOLS_CONCAT.out.vcf)
+      if (params.filter_vcf) {
+          GATK_VARIANTFILTRATION(BCFTOOLS_CONCAT.out.vcf, GATK_INDEXFEATUREFILE.out.idx, WGS_INDICES.out.fasta_fai, WGS_INDICES.out.dict)
 
-  if (params.filter_vcf) {
-      GATK_VARIANTFILTRATION(BCFTOOLS_CONCAT.out.vcf, GATK_INDEXFEATUREFILE.out.idx, WGS_INDICES.out.fasta_fai, WGS_INDICES.out.dict)
-
-      GATK_VARIANTSTOTABLE(GATK_VARIANTFILTRATION.out.vcf, GATK_VARIANTFILTRATION.out.idx)
+          GATK_VARIANTSTOTABLE(GATK_VARIANTFILTRATION.out.vcf, GATK_VARIANTFILTRATION.out.idx)
+          }
+      else {
+          GATK_VARIANTSTOTABLE(BCFTOOLS_CONCAT.out.vcf, GATK_INDEXFEATUREFILE.out.idx)
       }
-  else {
-      GATK_VARIANTSTOTABLE(BCFTOOLS_CONCAT.out.vcf, GATK_INDEXFEATUREFILE.out.idx)
-  }
 
-  ch_multiqc_files = Channel.empty()
-  ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTALIGNMENTSUMMARYMETRICS.out.txt.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTWGSMETRICS.out.txt.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(PICARD_MARKDUPLICATES.out.dedup_metrics.collect{it[1]}.ifEmpty([]))
+      ch_multiqc_files = Channel.empty()
+      ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
+      ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
+      ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTALIGNMENTSUMMARYMETRICS.out.txt.collect{it[1]}.ifEmpty([]))
+      ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTWGSMETRICS.out.txt.collect{it[1]}.ifEmpty([]))
+      ch_multiqc_files = ch_multiqc_files.mix(PICARD_MARKDUPLICATES.out.dedup_metrics.collect{it[1]}.ifEmpty([]))
 
-  MULTIQC (
-      ch_multiqc_files.collect()
-  )
+      MULTIQC (
+          ch_multiqc_files.collect()
+      )
+      genotype_table = GATK_VARIANTSTOTABLE.out.genotypes
+  emit:
+      genotype_table
 
 }
