@@ -6,9 +6,10 @@ nextflow_workflow {
     test("D. mel simulated 100k -- bowtie2 -- strand detection -- PE -- compressed input") {
         when {
             params {
-                fasta = "/kuhpc/work/sjmac/observer/references/d_melanogaster/ensembl/v110/Drosophila_melanogaster.BDGP6.46.dna_sm.primary_assembly.2L.fa"
-                gtf = "/kuhpc/work/sjmac/observer/references/d_melanogaster/ensembl/v110/Drosophila_melanogaster.BDGP6.46.110.2L.gtf"
-                sample_folder = "/kuhpc/work/sjmac/observer/simulated_data/rnaseq/d_melanogaster/100k/"
+                sims_cache = "/kuhpc/work/sjmac/observer/simulated_data"
+                fasta = params.sims_cache+"/rnaseq/d_melanogaster/refs/Drosophila_melanogaster.BDGP6.46.dna_sm.primary_assembly.2L.fa"
+                gtf = params.sims_cache+"/rnaseq/d_melanogaster/refs/Drosophila_melanogaster.BDGP6.46.110.2L.gtf"
+                sample_folder = params.sims_cache+"/rnaseq/d_melanogaster/100k"
                 rsem_aligner = "bowtie2"
                 read_type = "PE"
                 pubdir = "tests/dmel_bowtie2_auto_PE_zip"
@@ -27,9 +28,10 @@ nextflow_workflow {
     test("D. mel simulated 100k -- bowtie2 -- strand detection -- SE -- compressed input") {
         when {
             params {
-                fasta = "/kuhpc/work/sjmac/observer/references/d_melanogaster/ensembl/v110/Drosophila_melanogaster.BDGP6.46.dna_sm.primary_assembly.2L.fa"
-                gtf = "/kuhpc/work/sjmac/observer/references/d_melanogaster/ensembl/v110/Drosophila_melanogaster.BDGP6.46.110.2L.gtf"
-                sample_folder = "/kuhpc/work/sjmac/observer/simulated_data/rnaseq/d_melanogaster/100k/SE"
+                sims_cache = "/kuhpc/work/sjmac/observer/simulated_data"
+                fasta = params.sims_cache+"/rnaseq/d_melanogaster/refs/Drosophila_melanogaster.BDGP6.46.dna_sm.primary_assembly.2L.fa"
+                gtf = params.sims_cache+"/rnaseq/d_melanogaster/refs/Drosophila_melanogaster.BDGP6.46.110.2L.gtf"
+                sample_folder = params.sims_cache+"/rnaseq/d_melanogaster/100k/SE"
                 rsem_aligner = "bowtie2"
                 read_type = "SE"
                 pubdir = "tests/dmel_bowtie2_auto_SE_zip"
@@ -49,9 +51,10 @@ nextflow_workflow {
     test("D. mel simulated 100k -- STAR -- skip strand -- PE -- compressed input") {
         when {
             params {
-                fasta = "/kuhpc/work/sjmac/observer/references/d_melanogaster/ensembl/v110/Drosophila_melanogaster.BDGP6.46.dna_sm.primary_assembly.2L.fa"
-                gtf = "/kuhpc/work/sjmac/observer/references/d_melanogaster/ensembl/v110/Drosophila_melanogaster.BDGP6.46.110.2L.gtf"
-                sample_folder = "/kuhpc/work/sjmac/observer/simulated_data/rnaseq/d_melanogaster/100k/"
+                sims_cache = "/kuhpc/work/sjmac/observer/simulated_data"
+                fasta = params.sims_cache+"/rnaseq/d_melanogaster/refs/Drosophila_melanogaster.BDGP6.46.dna_sm.primary_assembly.2L.fa"
+                gtf = params.sims_cache+"/rnaseq/d_melanogaster/refs/Drosophila_melanogaster.BDGP6.46.110.2L.gtf"
+                sample_folder = params.sims_cache+"/rnaseq/d_melanogaster/100k"
                 rsem_aligner = "star"
                 read_type = "PE"
                 strandedness = "non_stranded"
@@ -71,9 +74,10 @@ nextflow_workflow {
     test("D. mel simulated 100k -- STAR -- skip strand -- SE -- compressed input") {
         when {
             params {
-                fasta = "/kuhpc/work/sjmac/observer/references/d_melanogaster/ensembl/v110/Drosophila_melanogaster.BDGP6.46.dna_sm.primary_assembly.2L.fa"
-                gtf = "/kuhpc/work/sjmac/observer/references/d_melanogaster/ensembl/v110/Drosophila_melanogaster.BDGP6.46.110.2L.gtf"
-                sample_folder = "/kuhpc/work/sjmac/observer/simulated_data/rnaseq/d_melanogaster/100k/SE"
+                sims_cache = "/kuhpc/work/sjmac/observer/simulated_data"
+                fasta = params.sims_cache+"/rnaseq/d_melanogaster/refs/Drosophila_melanogaster.BDGP6.46.dna_sm.primary_assembly.2L.fa"
+                gtf = params.sims_cache+"/rnaseq/d_melanogaster/refs/Drosophila_melanogaster.BDGP6.46.110.2L.gtf"
+                sample_folder = params.sims_cache+"/rnaseq/d_melanogaster/100k/SE"
                 rsem_aligner = "star"
                 read_type = "SE"
                 pubdir = "tests/dmel_star_skip_SE_zip"
@@ -93,9 +97,10 @@ nextflow_workflow {
     test("D. mel simulated 100k -- bowtie2 -- skip strand -- PE -- uncompressed input") {
         when {
             params {
-                fasta = "/kuhpc/work/sjmac/observer/references/d_melanogaster/ensembl/v110/Drosophila_melanogaster.BDGP6.46.dna_sm.primary_assembly.2L.fa"
-                gtf = "/kuhpc/work/sjmac/observer/references/d_melanogaster/ensembl/v110/Drosophila_melanogaster.BDGP6.46.110.2L.gtf"
-                sample_folder = "/kuhpc/work/sjmac/observer/simulated_data/rnaseq/d_melanogaster/100k/"
+                sims_cache = "/kuhpc/work/sjmac/observer/simulated_data"
+                fasta = params.sims_cache+"/rnaseq/d_melanogaster/refs/Drosophila_melanogaster.BDGP6.46.dna_sm.primary_assembly.2L.fa"
+                gtf = params.sims_cache+"/rnaseq/d_melanogaster/refs/Drosophila_melanogaster.BDGP6.46.110.2L.gtf"
+                sample_folder = params.sims_cache+"/rnaseq/d_melanogaster/100k"
                 rsem_aligner = "bowtie2"
                 read_type = "PE"
                 strandedness = "non_stranded"
@@ -117,9 +122,10 @@ nextflow_workflow {
     test("D. mel simulated 100k -- bowtie2 -- skip strand -- SE -- uncompressed input") {
         when {
             params {
-                fasta = "/kuhpc/work/sjmac/observer/references/d_melanogaster/ensembl/v110/Drosophila_melanogaster.BDGP6.46.dna_sm.primary_assembly.2L.fa"
-                gtf = "/kuhpc/work/sjmac/observer/references/d_melanogaster/ensembl/v110/Drosophila_melanogaster.BDGP6.46.110.2L.gtf"
-                sample_folder = "/kuhpc/work/sjmac/observer/simulated_data/rnaseq/d_melanogaster/100k/SE"
+                sims_cache = "/kuhpc/work/sjmac/observer/simulated_data"
+                fasta = params.sims_cache+"/rnaseq/d_melanogaster/refs/Drosophila_melanogaster.BDGP6.46.dna_sm.primary_assembly.2L.fa"
+                gtf = params.sims_cache+"/rnaseq/d_melanogaster/refs/Drosophila_melanogaster.BDGP6.46.110.2L.gtf"
+                sample_folder = params.sims_cache+"/rnaseq/d_melanogaster/100k/SE"
                 rsem_aligner = "bowtie2"
                 read_type = "SE"
                 strandedness = "non_stranded"

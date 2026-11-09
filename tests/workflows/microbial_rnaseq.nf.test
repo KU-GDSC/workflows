@@ -6,9 +6,10 @@ nextflow_workflow {
     test("E. faecaelis simulated 100k -- bowtie2 -- skip strand -- PE -- compressed input") {
         when {
             params {
-                fasta = "/kuhpc/work/sjmac/observer/references/e_faecalis/ncbi_dataset/data/GCF_000007785.1/GCF_000007785.1_ASM778v1_genomic.fna"
-                gff = "/kuhpc/work/sjmac/observer/references/e_faecalis/ncbi_dataset/data/GCF_000007785.1/genomic.gff"
-                sample_folder = "/kuhpc/work/sjmac/observer/simulated_data/rnaseq/e_faecalis/100k/"
+                sims_cache="/kuhpc/work/sjmac/observer/simulated_data"
+                fasta = params.sims_cache+"/rnaseq/e_faecalis/refs/GCF_000007785.1_ASM778v1_genomic.fna"
+                gff = params.sims_cache+"/rnaseq/e_faecalis/refs/genomic.gff"
+                sample_folder = params.sims_cache+"/rnaseq/e_faecalis/100k/"
                 read_type = "PE"
                 strandedness = "non_stranded"
                 pubdir = "tests/efae_bowtie2_skip_PE_zip"
@@ -27,9 +28,10 @@ nextflow_workflow {
     test("E. faecaelis simulated 100k -- bowtie2 -- skip strand -- SE -- compressed input") {
         when {
             params {
-                fasta = "/kuhpc/work/sjmac/observer/references/e_faecalis/ncbi_dataset/data/GCF_000007785.1/GCF_000007785.1_ASM778v1_genomic.fna"
-                gff = "/kuhpc/work/sjmac/observer/references/e_faecalis/ncbi_dataset/data/GCF_000007785.1/genomic.gff"
-                sample_folder = "/kuhpc/work/sjmac/observer/simulated_data/rnaseq/e_faecalis/100k/SE"
+                sims_cache="/kuhpc/work/sjmac/observer/simulated_data"
+                fasta = params.sims_cache+"/rnaseq/e_faecalis/refs/GCF_000007785.1_ASM778v1_genomic.fna"
+                gff = params.sims_cache+"/rnaseq/e_faecalis/refs/genomic.gff"
+                sample_folder = params.sims_cache+"/rnaseq/e_faecalis/100k/SE"
                 read_type = "SE"
                 strandedness = "non_stranded"
                 pubdir = "tests/efae_bowtie2_skip_SE_zip"
@@ -48,9 +50,10 @@ nextflow_workflow {
     test("E. faecaelis simulated 100k -- bowtie2 -- skip strand -- PE -- uncompressed input") {
         when {
             params {
-                fasta = "/kuhpc/work/sjmac/observer/references/e_faecalis/ncbi_dataset/data/GCF_000007785.1/GCF_000007785.1_ASM778v1_genomic.fna"
-                gff = "/kuhpc/work/sjmac/observer/references/e_faecalis/ncbi_dataset/data/GCF_000007785.1/genomic.gff"
-                sample_folder = "/kuhpc/work/sjmac/observer/simulated_data/rnaseq/e_faecalis/100k/"
+                sims_cache="/kuhpc/work/sjmac/observer/simulated_data"
+                fasta = params.sims_cache+"/rnaseq/e_faecalis/refs/GCF_000007785.1_ASM778v1_genomic.fna"
+                gff = params.sims_cache+"/rnaseq/e_faecalis/refs/genomic.gff"
+                sample_folder = params.sims_cache+"/rnaseq/e_faecalis/100k"
                 read_type = "PE"
                 extension = ".fastq"
                 strandedness = "non_stranded"

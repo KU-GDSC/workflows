@@ -6,8 +6,9 @@ nextflow_workflow {
     test("D. melanogaster 2L2R 10X simulated -- PE -- compressed input") {
         when {
             params {
-                fasta = "/kuhpc/work/sjmac/observer/references/d_melanogaster/ensembl/v110/Drosophila_melanogaster.BDGP6.46.dna_sm.primary_assembly.fa"
-                sample_folder = "/kuhpc/work/sjmac/observer/simulated_data/wgs/d_melanogaster/PE"
+                sims_cache="/kuhpc/work/sjmac/observer/simulated_data"
+                fasta = params.sims_cache+"/wgs/d_melanogaster/refs/Drosophila_melanogaster.BDGP6.46.dna_sm.primary_assembly.fa"
+                sample_folder = params.sims_cache+"/wgs/d_melanogaster/PE"
                 read_type = "PE"
                 extension = ".fastq.gz"
                 pubdir = "tests/wgs_PE"
