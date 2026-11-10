@@ -36,10 +36,10 @@ workflow WGS {
         // prepare reads channel
 
         if (params.read_type == 'PE'){
-        ch_reads = Channel.fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true )
+        ch_reads = channel.fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true )
         }
         else if (params.read_type == 'SE'){
-        ch_reads = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}",checkExists:true, size:1 )
+        ch_reads = channel.fromFilePairs("${params.sample_folder}/*${params.extension}",checkExists:true, size:1 )
         }
         // if channel is empty give error message and exit
         ch_reads.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
@@ -65,14 +65,14 @@ workflow WGS {
 
       PICARD_COLLECTWGSMETRICS(PICARD_MARKDUPLICATES.out.dedup_bam)
       
-      ch_bams = Channel.empty()
+      ch_bams = channel.empty()
       ch_bams = ch_bams.mix(PICARD_MARKDUPLICATES.out.dedup_bam.collect{it[1]}.ifEmpty([]))
-      ch_bais = Channel.empty()
+      ch_bais = channel.empty()
       ch_bais = ch_bais.mix(PICARD_MARKDUPLICATES.out.dedup_bai.collect{it[1]}.ifEmpty([]))
 
       BUNDLE_BAMS(ch_bams, ch_bais)
 
-      to_genotype = Channel.empty()
+      to_genotype = channel.empty()
       to_genotype = BUNDLE_BAMS.out.bam_dir
                         .combine(WGS_INDICES.out.contig_list)
                         .combine(WGS_INDICES.out.fasta_fai)
@@ -92,7 +92,7 @@ workflow WGS {
           GATK_VARIANTSTOTABLE(BCFTOOLS_CONCAT.out.vcf, GATK_INDEXFEATUREFILE.out.idx)
       }
 
-      ch_multiqc_files = Channel.empty()
+      ch_multiqc_files = channel.empty()
       ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
       ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
       ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTALIGNMENTSUMMARYMETRICS.out.txt.collect{it[1]}.ifEmpty([]))

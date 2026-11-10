@@ -36,13 +36,13 @@ workflow RNASEQ {
         if (params.concat_lanes){
           
         if (params.read_type == 'PE'){
-            read_ch = Channel
+            read_ch = channel
                     .fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true, flat:true )
                     .map { file, file1, file2 -> tuple(GET_LIBRARY_ID(file), file1, file2) }
                     .groupTuple()
           }
           else if (params.read_type == 'SE'){
-            read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}", checkExists:true, size:1 )
+            read_ch = channel.fromFilePairs("${params.sample_folder}/*${params.extension}", checkExists:true, size:1 )
                         .map { file, file1 -> tuple(GET_LIBRARY_ID(file), file1) }
                         .groupTuple()
                         .map{t-> [t[0], t[1].flatten()]}
@@ -53,10 +53,10 @@ workflow RNASEQ {
         } else {
           
           if (params.read_type == 'PE'){
-            read_ch = Channel.fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true )
+            read_ch = channel.fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true )
           }
           else if (params.read_type == 'SE'){
-            read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}",checkExists:true, size:1 )
+            read_ch = channel.fromFilePairs("${params.sample_folder}/*${params.extension}",checkExists:true, size:1 )
           }
             // if channel is empty give error message and exit
             read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
@@ -70,8 +70,8 @@ workflow RNASEQ {
         // Initialize or generate RSEM indices
         // If pre-generated indices provided, map to channels
         if (params.rsem_index) {
-            rnaseq_index_fh = Channel.value(file("${params.rsem_index}/**"))
-            rnaseq_index_fh_chrlist = Channel.value(file("${params.rsem_index}/**.chrlist"))
+            rnaseq_index_fh = channel.value(file("${params.rsem_index}/**"))
+            rnaseq_index_fh_chrlist = channel.value(file("${params.rsem_index}/**.chrlist"))
             PARSE_RNASEQ_INDICES(rnaseq_index_fh, rnaseq_index_fh_chrlist)
             rnaseq_indices_dict = PARSE_RNASEQ_INDICES.out.dict
             rnaseq_indices_refFlat = PARSE_RNASEQ_INDICES.out.refFlat
@@ -119,9 +119,9 @@ workflow RNASEQ {
         RSEM_CALCULATE_EXPRESSION(rsem_input, rnaseq_indices_rsem, rnaseq_indices_basename)
 
         // Merge RSEM results across samples
-        ch_genes = Channel.empty()
+        ch_genes = channel.empty()
         ch_genes = ch_genes.mix(RSEM_CALCULATE_EXPRESSION.out.rsem_genes.collect{it[1]}.ifEmpty([]))
-        ch_isoforms = Channel.empty()
+        ch_isoforms = channel.empty()
         ch_isoforms = ch_isoforms.mix(RSEM_CALCULATE_EXPRESSION.out.rsem_isoforms.collect{it[1]}.ifEmpty([]))
 
         MERGE_RSEM_COUNTS(ch_genes, ch_isoforms)
@@ -134,7 +134,7 @@ workflow RNASEQ {
         PICARD_COLLECTRNASEQMETRICS(PICARD_SORTSAM.out.bam.join(CHECK_STRANDEDNESS.out.strand_setting), rnaseq_indices_refFlat, rnaseq_indices_rRNA_intervals)
         
         // Summary report generation
-        ch_multiqc_files = Channel.empty()
+        ch_multiqc_files = channel.empty()
         ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(CHECK_STRANDEDNESS.out.strandedness_report.collect{it[1]}.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
