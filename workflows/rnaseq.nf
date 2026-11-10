@@ -63,7 +63,7 @@ workflow RNASEQ {
         }
         // Get read lenghts from FASTQs
         GET_READ_LENGTH(read_ch)
-        ch_read_lengths = GET_READ_LENGTH.out.read_length.collect{ it[1].toInteger() }.flatten()
+        ch_read_lengths = GET_READ_LENGTH.out.read_length.collect{ it -> it[1].toInteger() }.flatten()
         ch_rsem_read_length_unique = ch_read_lengths.unique().count()
         ch_rsem_read_length = ch_read_lengths.first()
 
@@ -120,9 +120,9 @@ workflow RNASEQ {
 
         // Merge RSEM results across samples
         ch_genes = channel.empty()
-        ch_genes = ch_genes.mix(RSEM_CALCULATE_EXPRESSION.out.rsem_genes.collect{it[1]}.ifEmpty([]))
+        ch_genes = ch_genes.mix(RSEM_CALCULATE_EXPRESSION.out.rsem_genes.collect{it -> it[1]}.ifEmpty([]))
         ch_isoforms = channel.empty()
-        ch_isoforms = ch_isoforms.mix(RSEM_CALCULATE_EXPRESSION.out.rsem_isoforms.collect{it[1]}.ifEmpty([]))
+        ch_isoforms = ch_isoforms.mix(RSEM_CALCULATE_EXPRESSION.out.rsem_isoforms.collect{it -> it[1]}.ifEmpty([]))
 
         MERGE_RSEM_COUNTS(ch_genes, ch_isoforms)
 
@@ -135,12 +135,12 @@ workflow RNASEQ {
         
         // Summary report generation
         ch_multiqc_files = channel.empty()
-        ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(CHECK_STRANDEDNESS.out.strandedness_report.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(RSEM_CALCULATE_EXPRESSION.out.rsem_cnt.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(RSEM_CALCULATE_EXPRESSION.out.star_log.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTRNASEQMETRICS.out.picard_metrics.collect{it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(CHECK_STRANDEDNESS.out.strandedness_report.collect{it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(RSEM_CALCULATE_EXPRESSION.out.rsem_cnt.collect{it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(RSEM_CALCULATE_EXPRESSION.out.star_log.collect{it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTRNASEQMETRICS.out.picard_metrics.collect{it -> it[1]}.ifEmpty([]))
 
         MULTIQC (
             ch_multiqc_files.collect()

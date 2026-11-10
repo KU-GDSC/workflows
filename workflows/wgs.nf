@@ -66,9 +66,9 @@ workflow WGS {
       PICARD_COLLECTWGSMETRICS(PICARD_MARKDUPLICATES.out.dedup_bam)
       
       ch_bams = channel.empty()
-      ch_bams = ch_bams.mix(PICARD_MARKDUPLICATES.out.dedup_bam.collect{it[1]}.ifEmpty([]))
+      ch_bams = ch_bams.mix(PICARD_MARKDUPLICATES.out.dedup_bam.collect{it -> it[1]}.ifEmpty([]))
       ch_bais = channel.empty()
-      ch_bais = ch_bais.mix(PICARD_MARKDUPLICATES.out.dedup_bai.collect{it[1]}.ifEmpty([]))
+      ch_bais = ch_bais.mix(PICARD_MARKDUPLICATES.out.dedup_bai.collect{it -> it[1]}.ifEmpty([]))
 
       BUNDLE_BAMS(ch_bams, ch_bais)
 
@@ -93,11 +93,11 @@ workflow WGS {
       }
 
       ch_multiqc_files = channel.empty()
-      ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
-      ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
-      ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTALIGNMENTSUMMARYMETRICS.out.txt.collect{it[1]}.ifEmpty([]))
-      ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTWGSMETRICS.out.txt.collect{it[1]}.ifEmpty([]))
-      ch_multiqc_files = ch_multiqc_files.mix(PICARD_MARKDUPLICATES.out.dedup_metrics.collect{it[1]}.ifEmpty([]))
+      ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it -> it[1]}.ifEmpty([]))
+      ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it -> it[1]}.ifEmpty([]))
+      ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTALIGNMENTSUMMARYMETRICS.out.txt.collect{it -> it[1]}.ifEmpty([]))
+      ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTWGSMETRICS.out.txt.collect{it -> it[1]}.ifEmpty([]))
+      ch_multiqc_files = ch_multiqc_files.mix(PICARD_MARKDUPLICATES.out.dedup_metrics.collect{it -> it[1]}.ifEmpty([]))
 
       MULTIQC (
           ch_multiqc_files.collect()
