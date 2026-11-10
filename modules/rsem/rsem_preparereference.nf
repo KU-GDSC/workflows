@@ -7,9 +7,9 @@ process RSEM_PREPAREREFERENCE {
 
   container "quay.io/jaxcompsci/rsem_bowtie2_star:0.1.0"
 
-  publishDir "${params.pubdir}/index", pattern: "rsem_${params.rsem_aligner}", mode:'copy', enabled: params.keep_reference
+  publishDir {"${params.pubdir}/index"}, pattern: {"rsem_${params.rsem_aligner}"}, mode:'copy', enabled: params.keep_reference
 
-  publishDir "${params.pubdir}/index", pattern: "README", mode:'copy', enabled: params.keep_reference
+  publishDir {"${params.pubdir}/index"}, pattern: {"README"}, mode:'copy', enabled: params.keep_reference
 
   input:
     path(fasta), stageAs: "rsem_${params.rsem_aligner}/*"

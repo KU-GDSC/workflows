@@ -8,7 +8,7 @@ process BWA_INDEX {
   
   container 'quay.io/biocontainers/bwa:0.7.17--hed695b0_6'
 
-  publishDir "${params.pubdir}/index", mode: 'copy', pattern: "${fasta}.*", enabled: params.keep_reference
+  publishDir {"${params.pubdir}/index"}, mode: 'copy', pattern: {"${fasta}.*"}, enabled: params.keep_reference
 
   input:
     path(fasta)

@@ -9,7 +9,7 @@ process RNA_SUMMARY_STATS {
 
     container "quay.io/jaxcompsci/perl:0.1.0"
 
-    publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID+'/stats' : 'summary_stats' }", pattern: "*stats.txt", mode:'copy'
+    publishDir {"${params.pubdir}/${ params.organize_by=='sample' ? sampleID+'/stats' : 'summary_stats' }"}, pattern: {"*stats.txt"}, mode:'copy'
 
     input:
     tuple val(sampleID), file(rsem_stats), file(quality_stats), file(picard_metrics)

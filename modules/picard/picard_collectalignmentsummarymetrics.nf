@@ -8,7 +8,7 @@ process PICARD_COLLECTALIGNMENTSUMMARYMETRICS{
 
   container 'broadinstitute/gatk:4.2.2.0'
 
-  publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID+'/stats' : 'picard' }", pattern: "*.txt", mode:'copy'
+  publishDir {"${params.pubdir}/${ params.organize_by=='sample' ? sampleID+'/stats' : 'picard' }"}, pattern: {"*.txt"}, mode:'copy'
 
   input:
   tuple val(sampleID), file(bam)

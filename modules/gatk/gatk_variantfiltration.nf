@@ -7,8 +7,8 @@ process GATK_VARIANTFILTRATION {
 
     container 'broadinstitute/gatk:4.2.2.0'
 
-    publishDir "${params.pubdir}/", pattern: "${outprefix}_variants_bcftools_filtered.vcf", mode:'copy'
-    publishDir "${params.pubdir}/", pattern: "${outprefix}_variants_bcftools_filtered.vcf.idx", mode:'copy'
+    publishDir {"${params.pubdir}/"}, pattern: {"${outprefix}_variants_bcftools_filtered.vcf"}, mode:'copy'
+    publishDir {"${params.pubdir}/"}, pattern: {"${outprefix}_variants_bcftools_filtered.vcf.idx"}, mode:'copy'
 
     input:
         path(vcf)

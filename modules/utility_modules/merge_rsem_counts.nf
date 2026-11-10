@@ -11,7 +11,7 @@ process MERGE_RSEM_COUNTS {
 
   container "quay.io/gdsc/debian-utility:bookworm-slim"
 
-  publishDir "${params.pubdir}", pattern: "rsem.merged.*.tsv", mode:'copy'
+  publishDir {"${params.pubdir}"}, pattern: "rsem.merged.*.tsv", mode:'copy'
 
   input:
     path ch_genes
