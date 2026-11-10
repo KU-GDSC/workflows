@@ -1,0 +1,38 @@
+{
+    "bowtie_skip_pe_zip": {
+        "content": [
+            [
+                "rsem.merged.gene_counts.tsv:md5,48731892d70f9403a77695996f612fd6"
+            ]
+        ],
+        "timestamp": "2026-11-02T08:53:25.093562527",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "25.04.7"
+        }
+    },
+    "bowtie_skip_se_zip": {
+        "content": [
+            [
+                "rsem.merged.gene_counts.tsv:md5,321d766eae230cf8f0e93a28249e3cb4"
+            ]
+        ],
+        "timestamp": "2026-11-02T08:59:14.046443673",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "25.04.7"
+        }
+    },
+    "bowtie_skip_pe_unzip": {
+        "content": [
+            [
+                "rsem.merged.gene_counts.tsv:md5,48731892d70f9403a77695996f612fd6"
+            ]
+        ],
+        "timestamp": "2026-11-02T09:05:28.53665423",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "25.04.7"
+        }
+    }
+}

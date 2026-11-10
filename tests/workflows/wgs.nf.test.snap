@@ -1,0 +1,26 @@
+{
+    "wgs_se_gzip": {
+        "content": [
+            [
+                "wgs_cohort_variants_bcftools_filtered_genotype_table.tsv:md5,af9988161bb19aab88dad57fb390c491"
+            ]
+        ],
+        "timestamp": "2026-11-02T10:14:37.910095748",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "25.04.7"
+        }
+    },
+    "wgs_pe_gzip": {
+        "content": [
+            [
+                "wgs_cohort_variants_bcftools_filtered_genotype_table.tsv:md5,38dcef6c9514a350c230f4e04241fb9f"
+            ]
+        ],
+        "timestamp": "2026-11-02T10:03:38.945854014",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "25.04.7"
+        }
+    }
+}

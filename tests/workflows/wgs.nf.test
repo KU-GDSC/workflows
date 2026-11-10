@@ -1,0 +1,46 @@
+nextflow_workflow {
+    name "Test WGS Variant Calling"
+    script "workflows/wgs.nf"
+    workflow "WGS"
+
+    test("D. melanogaster 2L2R 10X simulated -- PE -- compressed input") {
+        when {
+            params {
+                sims_cache="/kuhpc/work/sjmac/observer/simulated_data"
+                fasta = params.sims_cache+"/wgs/d_melanogaster/refs/Drosophila_melanogaster.BDGP6.46.dna_sm.primary_assembly.fa"
+                sample_folder = params.sims_cache+"/wgs/d_melanogaster/PE"
+                read_type = "PE"
+                extension = ".fastq.gz"
+                pubdir = "tests/wgs_PE"
+                pipeline = "wgs"
+            }
+        }
+
+        then {
+            assertAll (
+                { assert snapshot(workflow.out.genotype_table).match("wgs_pe_gzip") },
+                { assert workflow.success }
+                )
+            }
+    }
+
+    test("D. melanogaster 2L2R 10X simulated -- SE -- compressed input") {
+        when {
+            params {
+                fasta = "/kuhpc/work/sjmac/observer/references/d_melanogaster/ensembl/v110/Drosophila_melanogaster.BDGP6.46.dna_sm.primary_assembly.fa"
+                sample_folder = "/kuhpc/work/sjmac/observer/simulated_data/wgs/d_melanogaster/SE"
+                read_type = "SE"
+                extension = ".fastq.gz"
+                pubdir = "tests/wgs_SE"
+                pipeline = "wgs"
+            }
+        }
+
+        then {
+            assertAll (
+                { assert snapshot(workflow.out.genotype_table).match("wgs_se_gzip") },
+                { assert workflow.success }
+                )
+            }
+    }
+}

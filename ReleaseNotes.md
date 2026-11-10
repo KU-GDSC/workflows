@@ -1,5 +1,52 @@
 # Release Notes
 
+## Release v0.2.0
+
+Minor release adds testing of workflows using [nf-test](https://www.nf-test.com/).
+Tests for all workflows are in the `tests/` directory. Workflows were slightly 
+refactored to add terminal workflow outputs (RSEM gene counts for RNA-seq and
+Microbial RNA-seq, genotype variant tables for WGS). This doesn't change
+the behavior of the workflow for actual use, but it allows for snapshots
+to be captured as MD5 hashes for these files. This allows for easy testing of
+all workflows to ensure that no unintended changes to terminal output result
+from future patches or updates.
+
+### Workflows Added:
+
+N/A
+
+### Subworkflows Added:
+
+N/A
+
+### Modules Added:
+
+N/A
+
+### Tests Added:
+
+1. tests/workflows/microbial_rnaseq.nf.test
+1. tests/workflows/rnaseq.nf.test
+1. tests/workflows/wgs.nf.test
+
+### Workflows Changes:
+
+1. workflows/microbial_rnaseq.nf
+1. workflows/rnaseq.nf
+1. workflows/wgs.nf
+
+### Subworkflows Changed:
+
+N/A
+
+### Modules Changed:
+
+N/A
+
+### Tests Changed:
+
+N/A
+
 ## Release v0.1.8
 
 Minor release to address a few bugs related to single-end FASTQ
