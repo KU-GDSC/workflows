@@ -2,69 +2,66 @@
 nextflow.enable.dsl=2
 
 // import modules
-include {HELP} from "${projectDir}/etc/help/microbial_rnaseq"
-include {PARAM_LOG} from "${projectDir}/etc/log/microbial_rnaseq"
-include {CONCATENATE_READS_PE} from "${projectDir}/modules/utility_modules/concatenate_reads_pe"
-include {CONCATENATE_READS_SE} from "${projectDir}/modules/utility_modules/concatenate_reads_se"
-include {GET_LIBRARY_ID} from "${projectDir}/etc/scripts/shared/getLibraryId.nf"
-include {GET_READ_LENGTH} from "${projectDir}/modules/utility_modules/get_read_length"
-include {PARSE_RNASEQ_INDICES} from "${projectDir}/modules/utility_modules/parse_rnaseq_indices"
-include {RNASEQ_INDICES} from "${projectDir}/subworkflows/indices/microbial_rnaseq"
-include {FASTP} from "${projectDir}/modules/fastp/fastp"
-include {CHECK_STRANDEDNESS} from "${projectDir}/modules/python/python_check_strandedness"
-
-include {FASTQC} from "${projectDir}/modules/fastqc/fastqc"
-include {READ_GROUPS} from "${projectDir}/modules/utility_modules/read_groups"
-include {RSEM_CALCULATE_EXPRESSION} from "${projectDir}/modules/rsem/rsem_calculate_expression"
-include {MERGE_RSEM_COUNTS} from "${projectDir}/modules/utility_modules/merge_rsem_counts"
-include {PICARD_ADDORREPLACEREADGROUPS} from "${projectDir}/modules/picard/picard_addorreplacereadgroups"
-include {PICARD_REORDERSAM} from "${projectDir}/modules/picard/picard_reordersam"
-include {PICARD_SORTSAM} from "${projectDir}/modules/picard/picard_sortsam"
-include {PICARD_COLLECTRNASEQMETRICS} from "${projectDir}/modules/picard/picard_collectrnaseqmetrics"
-include {MULTIQC} from "${projectDir}/modules/multiqc/multiqc"
-
-// help if needed
-if (params.help){
-    HELP()
-    exit 0
-}
-
-// log parameter info
-PARAM_LOG()
-
-if (params.concat_lanes){
-  
-if (params.read_type == 'PE'){
-    read_ch = Channel
-            .fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true, flat:true )
-            .map { file, file1, file2 -> tuple(GET_LIBRARY_ID(file), file1, file2) }
-            .groupTuple()
-  }
-  else if (params.read_type == 'SE'){
-    read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}", checkExists:true, size:1 )
-                .map { file, file1 -> tuple(GET_LIBRARY_ID(file), file1) }
-                .groupTuple()
-                .map{t-> [t[0], t[1].flatten()]}
-  }
-    // if channel is empty give error message and exit
-    read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
-
-} else {
-  
-  if (params.read_type == 'PE'){
-    read_ch = Channel.fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true )
-  }
-  else if (params.read_type == 'SE'){
-    read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}",checkExists:true, size:1 )
-  }
-    // if channel is empty give error message and exit
-    read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
-}
+include {HELP} from '../etc/help/microbial_rnaseq'
+include {PARAM_LOG} from '../etc/log/microbial_rnaseq'
+include {CONCATENATE_READS_PE} from '../modules/utility_modules/concatenate_reads_pe'
+include {CONCATENATE_READS_SE} from '../modules/utility_modules/concatenate_reads_se'
+include {GET_LIBRARY_ID} from '../etc/scripts/shared/getLibraryId.nf'
+include {GET_READ_LENGTH} from '../modules/utility_modules/get_read_length'
+include {PARSE_RNASEQ_INDICES} from '../modules/utility_modules/parse_rnaseq_indices'
+include {RNASEQ_INDICES} from '../subworkflows/indices/microbial_rnaseq'
+include {FASTP} from '../modules/fastp/fastp'
+include {CHECK_STRANDEDNESS} from '../modules/python/python_check_strandedness'
+include {FASTQC} from '../modules/fastqc/fastqc'
+include {READ_GROUPS} from '../modules/utility_modules/read_groups'
+include {RSEM_CALCULATE_EXPRESSION} from '../modules/rsem/rsem_calculate_expression'
+include {MERGE_RSEM_COUNTS} from '../modules/utility_modules/merge_rsem_counts'
+include {PICARD_ADDORREPLACEREADGROUPS} from '../modules/picard/picard_addorreplacereadgroups'
+include {PICARD_REORDERSAM} from '../modules/picard/picard_reordersam'
+include {PICARD_SORTSAM} from '../modules/picard/picard_sortsam'
+include {PICARD_COLLECTRNASEQMETRICS} from '../modules/picard/picard_collectrnaseqmetrics'
+include {MULTIQC} from '../modules/multiqc/multiqc'
 
 workflow MICROBIAL_RNASEQ {
     main:
-        // Initialize or generate RSEM indices
+        // help if needed
+        if (params.help){
+            HELP()
+            exit 0
+        }
 
+        // log parameter info
+        PARAM_LOG()
+
+        if (params.concat_lanes){
+          
+        if (params.read_type == 'PE'){
+            read_ch = Channel
+                    .fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true, flat:true )
+                    .map { file, file1, file2 -> tuple(GET_LIBRARY_ID(file), file1, file2) }
+                    .groupTuple()
+          }
+          else if (params.read_type == 'SE'){
+            read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}", checkExists:true, size:1 )
+                        .map { file, file1 -> tuple(GET_LIBRARY_ID(file), file1) }
+                        .groupTuple()
+                        .map{t-> [t[0], t[1].flatten()]}
+          }
+            // if channel is empty give error message and exit
+            read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
+
+        } else {
+          
+          if (params.read_type == 'PE'){
+            read_ch = Channel.fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true )
+          }
+          else if (params.read_type == 'SE'){
+            read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}",checkExists:true, size:1 )
+          }
+            // if channel is empty give error message and exit
+            read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
+        }
+        // Initialize or generate RSEM indices
         // If pre-generated indices provided, map to channels
         if (params.rsem_index) {
             rnaseq_index_fh = Channel.value(file("${params.rsem_index}/**"))
