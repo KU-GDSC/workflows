@@ -68,7 +68,7 @@ process RSEM_CALCULATE_EXPRESSION {
         outbam="--star-output-genome-bam --sort-bam-by-coordinate"
         seed_length=""
         samtools_mem = (task.memory.giga / task.cpus).toInteger()
-        sort_command="samtools sort -@ 6 -m 16G -o ${sampleID}.STAR.genome.sorted.bam ${sampleID}.STAR.genome.bam"
+        sort_command="samtools sort -@ 6 -m ${samtools_mem}G -o ${sampleID}.STAR.genome.sorted.bam ${sampleID}.STAR.genome.bam"
         index_command="samtools index ${sampleID}.STAR.genome.sorted.bam"
         intermediate="--keep-intermediate-files"
         star_log="cp ${sampleID}.temp/*.final.out ./${sampleID}.STAR.Log.final.out && rm -r ${sampleID}.temp"
