@@ -3,11 +3,11 @@ nextflow.enable.dsl=2
 
 // import modules
 
-include {RSEM_PREPAREREFERENCE} from "${projectDir}/modules/rsem/rsem_preparereference"
-include {PICARD_CREATESEQUENCEDICTIONARY} from "${projectDir}/modules/picard/picard_createsequencedictionary"
-include {UCSC_GTFTOGENEPRED} from "${projectDir}/modules/ucsc/ucsc_gtftogenepred"
-include {GENERATE_RRNA_INTERVALS} from "${projectDir}/modules/utility_modules/generate_rrna_intervals"
-include {KALLISTO_INDEX} from "${projectDir}/modules/kallisto/kallisto_index"
+include {RSEM_PREPAREREFERENCE} from '../../modules/rsem/rsem_preparereference'
+include {PICARD_CREATESEQUENCEDICTIONARY} from '../../modules/picard/picard_createsequencedictionary'
+include {UCSC_GTFTOGENEPRED} from '../../modules/ucsc/ucsc_gtftogenepred'
+include {GENERATE_RRNA_INTERVALS} from '../../modules/utility_modules/generate_rrna_intervals'
+include {KALLISTO_INDEX} from '../../modules/kallisto/kallisto_index'
 
 workflow RNASEQ_INDICES {
     take:
@@ -15,11 +15,11 @@ workflow RNASEQ_INDICES {
         gff             //      file: /path/to/genome.gff
 
     main:
-        ch_fasta = Channel.value(file(fasta))
-        ch_gff = Channel.value(file(gff))
+        ch_fasta = channel.value(file(fasta))
+        ch_gff = channel.value(file(gff))
 
-        read_length = Channel.value(100)
-        read_unique = Channel.value(2)
+        read_length = channel.value(100)
+        read_unique = channel.value(2)
 
         RSEM_PREPAREREFERENCE(ch_fasta, ch_gff, read_length, read_unique)
         rsem_index = RSEM_PREPAREREFERENCE.out.index

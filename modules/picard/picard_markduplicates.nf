@@ -8,7 +8,7 @@ process PICARD_MARKDUPLICATES {
 
     container 'broadinstitute/gatk:4.2.2.0'
 
-    publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID+'/bam' : 'picard' }", pattern: "*_dedup.ba*", mode:'copy', enabled: params.keep_intermediate && params.workflow == 'wgs'
+    publishDir {"${params.pubdir}/${ params.organize_by=='sample' ? sampleID+'/bam' : 'picard' }"}, pattern: {"*_dedup.ba*"}, mode:'copy', enabled: params.keep_intermediate && params.workflow == 'wgs'
 
     input:
         tuple val(sampleID), file(bam)
@@ -23,13 +23,14 @@ process PICARD_MARKDUPLICATES {
         my_mem =  my_mem[0..-4]
 
         """
+        mkdir -p temp
         gatk --java-options "-Xmx${my_mem}G -Xms${my_mem}G -XX:+UnlockDiagnosticVMOptions -XX:-UseCRC32Intrinsics" MarkDuplicates \
         I=${bam[0]} \
         O=${sampleID}_dedup.bam \
         M=${sampleID}_dup_metrics.txt \
         REMOVE_DUPLICATES=false \
         CREATE_INDEX=true \
-        TMP_DIR=${workDir}/temp \
+        TMP_DIR=`pwd`/temp \
         SORTING_COLLECTION_SIZE_RATIO=0.15 \
         MAX_RECORDS_IN_RAM=300000 \
         VALIDATION_STRINGENCY=SILENT

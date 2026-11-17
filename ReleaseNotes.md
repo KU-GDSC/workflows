@@ -1,5 +1,28 @@
 # Release Notes
 
+## Release v1.0.0
+
+This major release updates the syntax of all modules, workflows, and configs
+for compliance with the Nextflow v26 strict syntax. This required some 
+refactoring of the majority of the codebase, although these changes should
+not impact the output of any workflow based on testing.
+
+**Note:** This release breaks backwards compatibility with Nextflow v23.04.3
+(the previously tested minimum version requirement), and
+so the minimum version for these workflows has been updated to v24.10.3.
+
+A summary of changes:
+
+- All workflow logic is contained within the `workflow{}` block.
+- Explicit closures have replaced implicit closures in all cases.
+- Module resource specification has been harmonized to remove the now deprecated
+use of "="
+- `include` statements must now be static, so workflows can no longer
+be conditionally loaded and all workflows and modules must be loaded at launch.
+- The use of the `$projectDir` and `$workDir` variables have been largely
+replaced in favor of relative paths. There remain some (non-critical) exceptions
+that will be addressed in future patches.
+
 ## Release v0.2.0
 
 Minor release adds testing of workflows using [nf-test](https://www.nf-test.com/).

@@ -3,17 +3,17 @@ nextflow.enable.dsl=2
 
 // import modules
 
-include {SAMTOOLS_FAIDX} from "${projectDir}/modules/samtools/samtools_faidx"
-include {BWA_INDEX} from "${projectDir}/modules/bwa/bwa_index"
-include {PICARD_CREATESEQUENCEDICTIONARY} from "${projectDir}/modules/picard/picard_createsequencedictionary"
-include {GET_CONTIG_NAMES} from "${projectDir}/modules/utility_modules/get_contig_names"
+include {SAMTOOLS_FAIDX} from '../../modules/samtools/samtools_faidx'
+include {BWA_INDEX} from '../../modules/bwa/bwa_index'
+include {PICARD_CREATESEQUENCEDICTIONARY} from '../../modules/picard/picard_createsequencedictionary'
+include {GET_CONTIG_NAMES} from '../../modules/utility_modules/get_contig_names'
 
 workflow WGS_INDICES {
     take:
         fasta           //      file: /path/to/genome.fasta
 
     main:
-        ch_fasta = Channel.value(file(fasta))
+        ch_fasta = channel.value(file(fasta))
 
         SAMTOOLS_FAIDX(ch_fasta)
         fasta_fai = SAMTOOLS_FAIDX.out.fasta_fai

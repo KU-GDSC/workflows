@@ -9,7 +9,7 @@ process READ_GROUPS {
 
   container "quay.io/jaxcompsci/python-bz2file:np_2.7.18"
 
-  publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID+'/stats' : 'read_groups' }", pattern: "*read_group.txt", mode:'copy', enabled: params.workflow == 'rnaseq' || params.keep_intermediate
+  publishDir {"${params.pubdir}/${ params.organize_by=='sample' ? sampleID+'/stats' : 'read_groups' }"}, pattern: {"*read_group.txt"}, mode:'copy', enabled: params.workflow == 'rnaseq' || params.keep_intermediate
 
   input:
     tuple val(sampleID), file(fq_reads)

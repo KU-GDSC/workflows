@@ -7,9 +7,9 @@ process RSEM_PREPAREREFERENCE {
 
   container "quay.io/jaxcompsci/rsem_bowtie2_star:0.1.0"
 
-  publishDir "${params.pubdir}/index", pattern: "rsem_${params.rsem_aligner}", mode:'copy', enabled: params.keep_reference
+  publishDir {"${params.pubdir}/index"}, pattern: {"rsem_${params.rsem_aligner}"}, mode:'copy', enabled: params.keep_reference
 
-  publishDir "${params.pubdir}/index", pattern: "README", mode:'copy', enabled: params.keep_reference
+  publishDir {"${params.pubdir}/index"}, pattern: {"README"}, mode:'copy', enabled: params.keep_reference
 
   input:
     path(fasta), stageAs: "rsem_${params.rsem_aligner}/*"
@@ -84,6 +84,6 @@ process RSEM_PREPAREREFERENCE {
         error("Multiple read lengths detected in FASTQ data and STAR indicies requested. STAR uses read length for index generation, so either separate data into different read length groups or rerun the workflow with 'rsem_aligner bowtie2'")
     }
     else {
-        error("The workflow " $params.workflow " or the aligner " $params.rsem_aligner " is not currently supported")
+        error("The workflow ${params.workflow} or the aligner ${params.rsem_aligner} is not currently supported")
         }
 }

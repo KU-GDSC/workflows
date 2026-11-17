@@ -9,7 +9,7 @@ process PICARD_CREATESEQUENCEDICTIONARY {
 
   container "broadinstitute/gatk:4.2.2.0"
 
-  publishDir "${params.pubdir}/index", pattern: "${fasta.baseName}.dict", mode:'copy', enabled: params.keep_reference
+  publishDir {"${params.pubdir}/index"}, pattern: {"${fasta.baseName}.dict"}, mode:'copy', enabled: params.keep_reference
 
   input:
     path(fasta)

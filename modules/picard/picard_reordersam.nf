@@ -9,7 +9,7 @@ process PICARD_REORDERSAM {
 
   container "broadinstitute/gatk:4.2.2.0"
 
-  publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID+'/bam' : 'picard' }", pattern: "*.bam", mode:'copy', enabled: params.keep_intermediate
+  publishDir {"${params.pubdir}/${ params.organize_by=='sample' ? sampleID+'/bam' : 'picard' }"}, pattern: {"*.bam"}, mode:'copy', enabled: params.keep_intermediate
 
   input:
     tuple val(sampleID), file(bam)
